@@ -1,0 +1,84 @@
+---
+title: "Regresión - Ejercicio 1"
+author: "Salvador Carrillo Fuentes"
+date: "Junio de 2019"
+output: html_document
+---
+
+## Introducción
+
+El *dataset* *births2006* consiste en 427,323 filas y 13 atributos, que incluyen el día de
+nacimiento (del mes - DOB MM) y el día de la semana de nacimiento (DOB WK), el peso de
+nacimiento (DBWT), la ganancia de peso de la madre en el embarazo (WTGAIN), el sexo del
+bebé (SEX) y su APGAR, APGAR5 (puntuaciones de dos pruebas justo tras nacer), si fue
+simple o múltiple (DPLURAL), la edad de gestación estimada en semanas (ESTGEST).
+
+```{r warning=FALSE, message=FALSE}
+library(nutshell)
+data(births2006.smpl)
+births2006.smpl[1:5, ]
+dim(births2006.smpl)
+```
+
+## 1. Usar comandos `table` y `barchart` para ver la frecuencia de nacimientos en cada día de la semana.
+
+```{r}
+library(lattice)
+barchart(table(births2006.smpl$DOB_WK), xlab="Births", ylab="Week day")
+```
+
+## 2. Visualizar en un sólo gráfico la frecuencia de nacimientos en cada día de la semana, teniendo en cuenta el tipo de parto que ha tenido (cesárea, etc).
+
+```{r}
+barchart(births2006.smpl$DOB_WK~ births2006.smpl$DMETH_REC)
+```
+
+## 3. Encontrar relaciones entre el peso en el momento del parto y el número de niños que ha habido en dicho parto (de forma visual y usando regresión).
+
+```{r warning=FALSE}
+model1 <- lm(DPLURAL ~ DBWT, births2006.smpl)
+
+library(ggplot2)
+ggplot(births2006.smpl, aes(DBWT, DPLURAL)) + geom_point()
+```
+
+## 4. Encontrar relaciones entre el peso en el momento del parto y la ganancia de peso durante
+el embarazo (de forma visual (con un *scatter plot* y usando regresión).
+
+```{r warning=FALSE}
+model2 <- lm(DBWT ~ WTGAIN, births2006.smpl)
+ggplot(births2006.smpl, aes(WTGAIN, DBWT)) + geom_point()
+```
+
+## 5. Calcular la media de peso del bebé en el nacimiento según el número de bebés nacidos
+en el parto. Calcular también esta media para niños y niñas de forma separada.
+
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+medias1 <- births2006.smpl %>%
+  group_by(DPLURAL) %>%
+  summarise(mean(DBWT, na.rm = T)) %>%
+  `colnames<-`(c("n_babies", "wt_mean"))
+
+ggplot(medias1, aes(n_babies, wt_mean)) + 
+  geom_point() +
+  labs(x="Número de bebés del parto", y="Media de peso") 
+
+
+medias2 <- births2006.smpl %>%
+  group_by(SEX, DPLURAL) %>%
+  summarise(mean(DBWT, na.rm = T)) %>%
+  `colnames<-`(c("SEX", "N_BABIES", "WT_MEAN"))
+
+ggplot(medias2, aes(N_BABIES, WT_MEAN, color=SEX)) + 
+  geom_point() + 
+  facet_grid(SEX ~ .) +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
+

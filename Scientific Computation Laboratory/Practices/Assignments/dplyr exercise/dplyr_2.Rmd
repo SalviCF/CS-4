@@ -1,0 +1,80 @@
+---
+title: "Ejercicio dplyr"
+author: "Salvador Carrillo Fuentes"
+date: "Abril de 2019"
+output: html_document
+css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE}
+library(dplyr)
+library(knitr)
+```
+
+## Ejercicio planteado
+
+Mostrar aquellos personajes para los que se desconozca su género o no tengan, dispuestos de mayor a menor altura y agrupados por `species`. Además, añade una nueva columna `heavy`, que será `TRUE` o `FALSE` dependiendo de si su masa es mayor que la media de masa de su especie (antes del filtrado) y cambia el nombre de la columna `skin_color` por `embodiment_color`.
+
+```{r}
+
+kable(starwars %>% 
+        group_by(species) %>%
+        mutate(heavy = mass>(mean(mass, na.rm = T))) %>%
+        filter(is.na(gender) | gender=="none") %>% 
+        arrange(desc(height)) %>% 
+        rename(embodiment_color = skin_color))
+              
+```
+
+## Ejercicios resueltos
+
+> 1. Obtener el número total de vehículos de cada especie (considerando tanto los valores de la columna "vehicles", como los de la columna "starships"), mostrando solo las filas de las especies que tengan al menos un vehículo.
+
+```{r}
+kable(starwars %>% 
+        select(name, species, vehicles, starships) %>% 
+        group_by(species) %>%
+        summarise(spec_vehi = length(unique(unlist(vehicles))), 
+                  spec_star = length(unique(unlist(starships)))) %>%
+        mutate(vehicles_starships = spec_vehi + spec_star) %>% 
+        filter(vehicles_starships > 0) %>% 
+        select(species, vehicles_starships))
+```
+
+> 2. Obtener los 3 personajes masculinos más altos de "Naboo" que aparecen solo en la película "The Phantom Menace" (ordenados de mayor a menor).
+
+```{r}
+kable(starwars %>% 
+        filter(gender=="male" & homeworld=="Naboo" & "The Phantom Menace" %in% films) %>%
+        arrange(desc(height)) %>%
+        head(3))
+```
+
+> 3. Obtener los personajes "Human" que solo aparecen en la película "A New Hope" y ordenarlos por peso.
+
+```{r}
+kable(starwars %>% 
+        filter(species=="Human" & films == "A New Hope") %>%
+        arrange(mass))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,227 @@
+---
+title: "Ejercicio *dataset* 'Titanic'"
+author: "Salvador Carrillo Fuentes"
+date: "Abril de 2019"
+output: html_document
+css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Realizar los siguientes ejercicios:
+
+> 1. Introduce órdenes para cargar los paquetes necesarios para obener las reglas de asociación y poder visualizar reglas de asociación:
+
+```{r warning=FALSE}
+library('arules')
+library('arulesViz')
+library('repmis')
+```
+
+> 2. Importar el dataset Titanic dataset (usar source_data()).
+
+```{r}
+source_data("http://www.rdatamining.com/data/titanic.raw.rdata?attredirects=0&d=1")
+```
+
+> 3. Visualiza 5 filas aleatorias entre todas las del dataset. Analizar el tipo de datos del dataset. Resumir la información estadística del dataset.
+
+```{r}
+titanic.raw[sample(1:nrow(titanic.raw), 5), ]
+class(titanic.raw)
+summary(titanic.raw)
+```
+
+> 4. Usar algoritmo apriori para extraer reglas de asociación usando los parámetros por defecto. Medir el tiempo que tardamos en generar las reglas (comando system.time). Visualizar las 10 primeras reglas.
+
+```{r}
+system.time(rules <- apriori(titanic.raw))
+inspect(rules[1:10]) # inspect(head(rules, 10))
+```
+
+> 5. Usar algoritmo apriori para extraer reglas de asociación con item Survived a la derecha (con ambos valores Yes y No), y usando como parámetros: soporte 0.005, confianza 0.8.
+
+> 6. Añadir a la llamada a priori el parámetro correcto para no dar el informe de mining de las reglas (verbose).
+
+> 7. Medir el tiempo que tardamos en generar las reglas (system.time). Visualizar las 10 primeras reglas.
+
+
+```{r}
+# 1ª forma
+system.time(rules2 <- apriori(titanic.raw, parameter = list(supp = 0.005, conf = 0.8), control = list(verbose=FALSE)))
+rules2.sub <- subset(rules2, subset = rhs %pin% "Survived=")
+# rules2.sub <- subset(apriori(titanic.raw, parameter = list(supp = 0.005, conf = 0.8)),
+#                      subset = rhs %pin% "Survived=")
+inspect(rules2.sub[1:10])
+
+# 2ª forma
+system.time(rules2 <- apriori(titanic.raw,
+                 control = list(verbose=FALSE),
+                 parameter = list(minlen=2, supp=0.005, conf=0.8),
+                 appearance = list(rhs=c("Survived=No",
+                                         "Survived=Yes"),
+                                   default="lhs")))
+inspect(rules2[1:10])
+```
+
+> 8. Usar comando round para redondear la calidad de las reglas (quality) con tres decimales.
+
+> 9. Ordenar las reglas obtenidas por confianza. Mostrarlas.
+
+```{r}
+quality(rules2) <- round(quality(rules2), 3)
+rules2.by.conf <- sort(rules2, by="conf")
+inspect(rules2.by.conf)
+```
+
+> 10. Encontrar reglas de asociación buscando valores interesantes a la izquierda/derecha. Al menos tres búsquedas distintas.
+
+```{r}
+reglas1 <- apriori(titanic.raw, appearance = list(lhs=c("Class=Crew")))
+reglas2 <- apriori(titanic.raw, appearance = list(rhs=c("Sex=Male")))
+reglas3 <- apriori(titanic.raw, appearance = list(rhs=c("Survived=No")))
+inspect(reglas3)
+```
+
+> 11. Unir las reglas1 y reglas2.
+
+```{r}
+r1.U.r2 <- union(reglas1, reglas2)
+```
+
+> 12. Hacer la intersección de reglas1 y reglas2.
+
+```{r}
+intersect(reglas1, reglas2)
+```
+
+> 13. Visualizar con plot las reglas obtenidas en el apartado anterior. Usar arulesViz:
+
+- parámetro **method** con valores graph, matrix,matrix3D,paracoord
+- parámetro measure con valores lift,.
+- parámetro control con valor list(type="itemsets")
+- parámetro booleano interactive
+
+
+```{r warning=FALSE}
+plot(rules2.by.conf)
+```
+
+En el siguiente gráfico, los antecedentes (columnas) en la matriz son agrupados usando *clustering*. Los grupos son representados por el *item* más interesante (mayor soporte) del grupo.
+
+```{r}
+plot(rules2.by.conf, method = "grouped")
+```
+
+En el siguiente gráfico, se estructuran las reglas en forma de matriz con los *itemsets* del antecedente en un eje y los del consecuente en el otro.
+
+```{r}
+plot(rules2.by.conf, method = "matrix")
+```
+
+En el siguiente gráfico, se representa las reglas (o *itemsets*) como un grafo con los *items* como vértices etiquetados y las reglas (o *itemsets*) representadas como vértices conectados a los *items* mediante aristas. 
+
+```{r}
+plot(rules2.by.conf, method = "graph")
+```
+
+```{r}
+plot(rules2.by.conf, method = "graph", control = list(type = "itemsets"))
+plot(rules2.by.conf, method = "paracoord")
+plot(rules2.by.conf, method = "paracoord", control = list(reorder = TRUE)) # reordenamos las reglas
+
+```
+
+Podemos especificar las medidas de interés (*"support"*, *"confidence"*, *"lift"*, *"order"*) usadas en la visualización, como se muestra a continuación.
+
+```{r}
+plot(rules2.by.conf, measure = "lift")
+plot(rules2, engine = "htmlwidget") # renderizamos el gráfico con un widget html
+```
+
+## Reglas redundantes
+
+Necesitamos una medida de interés (*confidence*, *lift*...) y ordenar las reglas usando dicha medida. Usaremos las reglas ordenadas en apartados anteriores `rules2.by.conf`:
+
+```{r}
+inspect(rules2.by.conf)
+```
+
+Observamos que la primera regla es más interesante que la segunda, ya que esta última contiene información innecesaria. 
+
+A continuación, se muestra el procedimiento para comprender cómo podemos eliminar reglas redundantes: 
+
+Dado `is.subset(x, y)`, cada vector fila indica si `x` es subconjunto del correspondiente elemento de `y`.
+
+```{r}
+m <- is.subset(rules2.by.conf[1:2], rules2.by.conf[1:2]) # '|' significa TRUE y '.' FALSE
+m
+colnames(m) <- c('rule1','rule2')
+row.names(m) <- c('rule1','rule2')
+m
+# Naturalmente, cada regla está incluida en sí misma, pero, además, observamos que la regla 1 está incluida en la regla 2
+```
+
+Como las reglas están ordenadas por confianza de manera decreciente, no queremos eliminar la regla 5 aunque sepamos que la regla 9 es subconjunto de ella, ya que tendrá mayor confianza.
+
+```{r}
+inspect(rules2.by.conf[5])
+inspect(rules2.by.conf[9])
+is.subset(rules2.by.conf[9], rules2.by.conf[5])
+```
+
+A continuación, realizamos el procedimiento con todas las reglas de `rules2.by.conf`. Primero convertimos la matriz en matriz triangular superior (eliminamos los valores que estén debajo de diagonal principal). Hacemos esto porque no nos interesan las relaciones en las que la primera regla tiene menos confianza que la segunda ni las relaciones reflexivas (una regla consigo misma).
+
+Por tanto, serán redundantes aquellas reglas cuyo valor al sumar por columnas sea mayor o igual a 1. 
+
+```{r}
+m <- is.subset(rules2.by.conf, rules2.by.conf) # returns sparse matrix by default
+m <- as.matrix(m)
+m[lower.tri(m, diag = T)] <- NA # ponemos NA en, y bajo la diagonal principal 
+colnames(m) <- paste0("regla", 1:ncol(m))
+row.names(m) <- paste0("regla", 1:nrow(m))
+m
+idx.reglas.redundantes <- colSums(m, na.rm = T) >= 1
+which(idx.reglas.redundantes)
+```
+
+Podemos seleccionar las reglas redundantes:
+
+```{r}
+rules2.by.conf.redun <- rules2.by.conf[idx.reglas.redundantes]
+inspect(rules2.by.conf.redun)
+```
+
+También podemos seleccionar las reglas no redundantes (eliminamos las redundantes):
+
+```{r}
+rules2.by.conf.no.redun <- rules2.by.conf[!idx.reglas.redundantes]
+inspect(rules2.by.conf.no.redun)
+```
+
+> 14. Encontrar reglas que expresen conocimiento acerca de los niños que sobrevivieron. La longitud mínima en la parte izquierda debe ser 2. Visualiza estas reglas con arulesViz.
+
+```{r}
+survivors.child <- subset(rules2, subset = lhs %in% c("Age=Child", "Survived=Yes") & rhs %in% c("Age=Child", "Survived=Yes") & size(lhs) >= 2)
+inspect(survivors.child)
+plot(survivors.child, method = "graph")
+```
+
+## Otra forma de eliminar redundancias
+
+Podemos usar el método `is.redundant()`.
+
+Según el manual:
+
+> A rule is redundant if a more general rules with the same or a higher confidence exists. That is, a more specific rule is redundant if it is only equally or even less predictive than a more general rule. A rule is more general if it has the same RHS but one or more items removed from the LHS. Formally, a rule X -> Y is redundant if for some X' subset X, conf(X' -> Y) >= conf(X -> Y). This is equivalent to a negative or zero improvement as defined by Bayardo et al. (2000). In this implementation other measures than confidence, e.g. improvement of lift, can be used as well.
+
+```{r}
+inspect(rules2.by.conf[!is.redundant(rules2.by.conf)]) # reglas no redundantes
+```
+
+
+
+
+

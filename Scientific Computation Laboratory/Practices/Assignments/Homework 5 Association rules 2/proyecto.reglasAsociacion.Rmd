@@ -1,0 +1,407 @@
+---
+title: "Reglas de Asociación - Dataset *online.csv*"
+author: 
+- Salvador Carrillo Fuentes
+- Grado en Ingeniería Informática, Universidad de Málaga
+date: "Mayo de 2019"
+output: ioslides_presentation
+widescreen: yes
+logo: r_logo.png
+css: style.css
+---
+
+## Contenido
+
+* Descargar a local el *dataset* ***online.csv***
+* Analizar la estructura y tipo del *dataset*
+* Analizar significado, estructura y tipo de cada columna
+* Comandos para ver las primeras filas y las últimas
+* Cambiar los nombres de las columnas: ***Fecha***, ***IDcomprador***, ***ProductoComprado***
+* Hacer un resumen (`summary`) del *dataset* y analizar detalladamente toda la información que devuelve el comando
+* Implementar una función que, usando funciones vectoriales de *R* (`apply`, `tapply`, `sapply` ...) devuelva si hay valores `NA` en las columnas del *dataset*. Si así lo fuera, devolver sus índices y además sustituirlos por el valor $0$ 
+
+## Contenido (II)
+
+* Calcular número de filas del *dataset*
+* Calcula en cuántas fechas distintas se han realizado ventas
+* Calcula cuántos compradores distintos hay en el *dataset*
+* Calcula cuántos productos distintos se han vendido
+* Visualiza con distintos gráficos el *dataset*:
+      + Los valores distintos de cada columna con varios tipos de gráficos
+      + Enfrenta unas variables contra otras para buscar patrones y comenta los patrones que puedas detectar 
+      
+## Contenido (III)
+
+* Usa `split` para construir a partir del *dataset* una lista con nombre ***lista.compra.usuarios*** en la que cada elemento de la lista es cada comprador junto con todos los productos que ha comprado
+* Hacer `summary` de ***lista.compra.usuarios***
+* Contar cuántos usuarios hay en la ***lista.compra.usuarios***
+* Detectar y eliminar duplicados en la ***lista.compra.usuarios***
+* Contar cuántos usuarios hay en la lista después de eliminar duplicados
+* Convertir a tipo de datos transacciones. Guardar en ***Tlista.compra.usuarios***
+* Hacer `inspect` de los dos primeros valores de ***Tlista.compra.usuarios***
+
+## Contenido (IV)
+
+* Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones más frecuentes
+* Generar las reglas de asociación con $80$% de confianza y $15$% de soporte
+* Ver las reglas generadas y ordenalas por ***lift***. Guarda el resultado en una variable nueva
+* Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que había. Dibuja las reglas ordenadas y no redundantes usando paquete ***arulesViz***. Si son muchas visualiza las $20$ primeras.
+* Aplicar la noción de afinidad introducida en clase
+* Investigar algún otro paquete *R* relacionado con reglas de asociación. Explicar su uso con un *dataset* y ejemplos
+
+## Descargar a local el *datasetonline.csv*
+
+Cargamos la librería ***readr*** para usar `read_cs()` e indicamos que no tome la primera fila del *csv* como las columnas de *data frame* mediante `col_names = F`.
+
+También cargamos las librerías ***ggplot2*** para crear gráficas, ***dplyr*** para manipular los datos y ***arules*** para la reglas de asociación.
+
+```{r warning=FALSE, results='hide', message=FALSE}
+library(readr)
+online <- read_csv("online.csv", col_names = F)
+library(ggplot2)
+library(dplyr)
+library(arules)
+```
+
+Podemos visualizar el *dataset* como si fuera una hoja de cálculo con el comando `View(online)`
+
+## Analizar la estructura y tipo del *dataset*
+
+```{r}
+str(online)
+```
+
+Se observa que ***online*** es un *data frame* cuyas columnas son vectores de tipo **Date***, **numeric*** y ***character***. 
+
+## Analizar la estructura y tipo del *dataset* (II)
+
+```{r}
+class(online) # tipo o clase del objeto
+typeof(online) # tipo que usa R para representar el objeto internamente
+is.data.frame(online)
+is.list(online)
+```
+
+## Analizar significado, estructura y tipo de cada columna
+
+Accedemos a la primera columna mediante `online$X1`
+
+```{r}
+str(online$X1)
+class(online$X1)
+typeof(online$X1)
+```
+
+Tenemos un vector con 22343 valores de tipo ***Date*** que ***R*** representa internamente mediante el tipo ***double***
+
+## Analizar significado, estructura y tipo de cada columna (II)
+
+Accedemos a la segunda columna mediante `online$X2`
+
+```{r}
+str(online$X2)
+class(online$X2)
+typeof(online$X2)
+```
+
+Tenemos un vector con 22343 valores de tipo ***numeric*** que ***R*** representa internamente mediante el tipo ***double***
+
+## Analizar significado, estructura y tipo de cada columna (III)
+
+Accedemos a la tercera columna mediante `online$X3`
+
+```{r}
+str(online$X3)
+class(online$X3)
+typeof(online$X3)
+```
+
+Tenemos un vector con 22343 valores de tipo ***character*** que ***R*** representa internamente mediante el tipo ***character***
+
+## Comandos para ver las primeras filas y las últimas
+
+```{r}
+head(online, 3) #  muestra las tres primeras filas
+tail(online, 3) # muestra las tres últimas filas
+```
+
+## Cambiar los nombres de las columnas: Fecha, IDcomprador, ProductoComprado
+
+Al no proporcionar nombres a las columnas al importar el *csv*, ***R*** les asignó un nombre por defecto (**X1**, **X2**, **X3**)
+
+```{r}
+names(online)
+```
+
+Podemos indicar otros nombres mediante asignanción:
+
+```{r}
+online <- as.data.frame(online)
+names(online) <- c("Fecha", "IDcomprador", "ProductoComprado")
+head(online, 2)
+```
+
+## Hacer un resumen del *dataset* y analizar detalladamente toda la información que devuelve el comando
+
+`summary()` devuelve un resumen tras aplicar algunas funciones estadísticas básicas:
+
+```{r}
+summary(online)
+```
+
+## Hacer un resumen del *dataset* y analizar detalladamente toda la información que devuelve el comando (II)
+
+```{r}
+summary(online$Fecha)
+```
+
+Observamos que para la columna `online$Fecha`: 
+
+* Los datos se encuentran entre *2000-01-01* y *2002-02-26* 
+* La media es *2000-12-21*
+* Las fechas que dejan por debajo (o son iguales) al $25\%$, $50\%$ y $75\%$ de todas las fechas son, respectivamente, *2000-05-29*, *2001-01-30* y *2001-06-21*
+
+## Hacer un resumen del *dataset* y analizar detalladamente toda la información que devuelve el comando (III)
+
+```{r}
+summary(online$IDcomprador)
+```
+
+Observamos que para la columna `online$IDcomprador`: 
+
+* Los datos se encuentran entre $1$ y $1139$ 
+* La media es $576.4$
+* Las *ids* que dejan por debajo (o son iguales) al $25\%$, $50\%$ y $75\%$ de todos las *ids* son, respectivamente, $292$, $582$ y $863$
+
+## Hacer un resumen del *dataset* y analizar detalladamente toda la información que devuelve el comando (IV)
+
+```{r}
+summary(online$ProductoComprado)
+```
+
+Observamos que para la columna `online$ProductoComprado`: 
+
+* Hay un total de $22343$ productos
+* La clase y modo de almacenamiento de los elementos de la columna es ***character***
+
+## Implementar una función que, usando funciones vectoriales de *R*, devuelva si hay valores `NA` en las columnas del *dataset*. Si así lo fuera, devolver sus índices y además sustituirlos por el valor $0$ 
+
+* La función `is.na()` devuelve una matriz *booleana* donde un elemento será `TRUE` si había un `NA` o `FALSE` en otro caso. 
+
+* Uso dicha matriz para obtener las posiciones de los `NA`s y, si había `NA`s, los sustituyo por $0$.
+
+```{r}
+na.in.dataframe <- function(dataframe){
+  dataframe.sin.nas <- dataframe
+  nas <- is.na(dataframe) 
+  posiciones <- which(nas)
+  hay.nas <- length(posiciones) > 0
+  if(hay.nas){ dataframe.sin.nas[nas] <- 0 }
+  return(list(hay.nas, dataframe.sin.nas, posiciones))
+}
+```
+
+## Número de filas, fechas distintas, compradores distintos y productos distintos en el *dataset*
+
+```{r}
+nrow(online)
+length(unique(online$Fecha))
+length(unique(online$IDcomprador))
+length(unique(online$ProductoComprado))
+```
+
+## Visualiza con distintos gráficos el *dataset*: valores distintos de cada columna (I)
+
+```{r}
+plot1 <- ggplot(online, aes(Fecha, seq_along(Fecha))) + 
+  geom_point(aes(color = Fecha)) + ylab("Índice"); plot1
+```
+
+Observamos que se produjeron dos paradas en la ventas, que se reiniciaron en *2001-01* y *2002-01*  
+
+## Visualiza con distintos gráficos el *dataset*: valores distintos de cada columna (II)
+
+```{r}
+plot2 <- ggplot(online, aes(ProductoComprado)) + 
+  geom_bar() + 
+  xlab("Item") + ylab("Frecuencia") + 
+  coord_flip(); plot2
+```
+
+## Visualiza con distintos gráficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (I)
+
+Puede ser interesante conocer las ventas según el mes o el año. Para ello, debemos manipular el *dataset* original.
+
+Añadimos nuevas columnas, ***Mes*** y ***Year***:
+
+```{r}
+online2 <- online %>%
+  mutate(Mes = months(Fecha)) %>%
+  mutate(Year = as.numeric(format(Fecha,'%Y')))
+```
+
+Ahora podemos agrupar por año y visualizar:
+
+```{r}
+plot3 <- ggplot(online2, aes(Year, fill = as.factor(Year))) + 
+  geom_bar() + 
+  ylab("Compras") + 
+  guides(fill=guide_legend(title=NULL))
+
+plot3
+```
+
+## Visualiza con distintos gráficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (II)
+
+También sería útil visualizar el número de compras en cada mes por año.
+
+```{r}
+plot4 <- ggplot(online2, aes(Mes)) + 
+  geom_bar() + 
+  facet_wrap(~ Year) + 
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Compras por mes en cada año", x = NULL, y = "Compras")
+
+plot4
+```
+
+## Usa `split` para construir a partir del *dataset* una lista con nombre ***lista.compra.usuarios*** en la que cada elemento de la lista es cada comprador junto con todos los productos que ha comprado
+
+Tras dividir por comprador, uso `lapply()` para quedarme con los productos.
+
+```{r}
+lista.compra.usuarios <- split(online, online$IDcomprador)
+lista.compra.usuarios <- lapply(lista.compra.usuarios, 
+                                function(x) x$ProductoComprado)
+lista.compra.usuarios[1]
+```
+
+## Hacer `summary` y contar usuarios de ***lista.compra.usuarios***
+
+```{r}
+head(summary(lista.compra.usuarios))
+length(lista.compra.usuarios)
+```
+
+## Eliminar duplicados, contar cuántos usuarios hay en la lista después de eliminar duplicados en la ***lista.compra.usuarios*** y convertir a tipo de datos transacciones
+
+* Podemos usar `unique()` para quitar los duplicados, aunque no hay:
+
+```{r}
+length(lista.compra.usuarios) == length(unique(lista.compra.usuarios))
+```
+
+* Convertimos a tipo *transacciones*:
+
+```{r warning=FALSE}
+Tlista.compra.usuarios <- as(lista.compra.usuarios, "transactions")
+```
+
+## Hacer `inspect` de los dos primeros valores
+
+```{r warning=FALSE}
+inspect(Tlista.compra.usuarios[1:2])
+```
+
+## Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones más frecuentes
+
+La clave está en el parámetro ***topN***:
+
+```{r}
+itemFrequencyPlot(Tlista.compra.usuarios, topN = 20)
+```
+
+## Generar las reglas de asociación con $80$% de confianza y $15$% de soporte
+
+Usamos la función `apriori()` para generar las reglas:
+
+```{r}
+reglas <- apriori(Tlista.compra.usuarios, 
+                  parameter = list(supp = 0.15, conf = 0.8))
+```
+
+## Ver las reglas generadas y ordenalas por ***lift***. Guarda el resultado en una variable nueva (I)
+
+```{r}
+reglas.por.lift <- sort(reglas, by = "lift") 
+```
+
+```{r}
+inspect(reglas.por.lift)
+```
+
+## Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que había
+
+* Eliminamos las reglas redundantes:
+
+```{r}
+reglas.no.redun.lift <- reglas.por.lift[!is.redundant(reglas.por.lift)]
+```
+
+* Aunque no hay reglas redundantes, el % de reglas redundantes podría calcularse así:
+
+$porcentaje = \frac{reglas.redundantes}{total.reglas} * 100$ 
+
+donde 
+
+$reglas.redundantes =$ `length(reglas.por.lift)` - `lenght(reglas.no.redun.lift)`
+
+y $total.reglas =$ `length(reglas.por.lift)`  
+
+## Dibuja las reglas ordenadas y no redundantes usando paquete ***arulesViz*** (I)
+
+```{r message=FALSE, warning=FALSE}
+library(arulesViz)
+plot(reglas.no.redun.lift, method = "graph")
+```
+
+## Dibuja las reglas ordenadas y no redundantes usando paquete ***arulesViz*** (II)
+
+```{r}
+plot(reglas.no.redun.lift)
+```
+
+## Aplicar la noción de *afinidad* introducida en clase
+
+Usamos la función `affinity()` para calcular una matriz de afinidad entre los *items*. Sólo se muestra una submatriz de $9\times5$
+
+```{r}
+affinity(Tlista.compra.usuarios)[1:9, 1:5]
+```
+
+## Investigar algún otro paquete *R* relacionado con reglas de asociación. Explicar su uso con un *dataset* y ejemplos (I)
+
+El paquete ***RWeka*** es una interfaz de *R* para *Weka*.
+
+*Weka* es una colección de algoritmos de *machine learning* para tareas *data mining*.
+
+Está escrito en *Java* y tiene herramientas para preprocesar datos, clasficación, regresión, *clustering*, **reglas de asociación** y visualización.
+
+Se puede encontrar más información en:  
+[https://cran.r-project.org/web/packages/RWeka/RWeka.pdf](https://cran.r-project.org/web/packages/RWeka/RWeka.pdf)  
+[https://rdrr.io/cran/RWeka/man/Weka_associators.html](https://rdrr.io/cran/RWeka/man/Weka_associators.html)
+
+## Investigar algún otro paquete *R* relacionado con reglas de asociación. Explicar su uso con un *dataset* y ejemplos (II)
+
+* Cargamos el *dataset* mediante la funcion `read.arff()`:
+
+```{r warning=FALSE}
+library(RWeka)
+```
+
+* Aplicamos el algoritmo `Apriori()`, que reduce iterativamente el soporte mínimo hasta que encuentra el número de reglas requerido con la mínima confianza dada. Especificamos que queremos $5$ reglas.
+
+```{r}
+x <- read.arff(system.file("arff", "contact-lenses.arff",
+                           package = "RWeka"))
+rules <- Apriori(x, Weka_control(N = 5))
+```
+
+## Investigar algún otro paquete *R* relacionado con reglas de asociación. Explicar su uso con un *dataset* y ejemplos (III)
+
+```{r}
+rules
+```
+
+
+

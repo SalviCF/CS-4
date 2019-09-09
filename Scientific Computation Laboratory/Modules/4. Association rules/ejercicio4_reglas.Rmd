@@ -1,0 +1,115 @@
+---
+title: "Ejercicio de clase: Reglas de asociación con arules"
+author: "Salvador Carrillo Fuentes"
+date: "Abril de 2019"
+output: html_document
+css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicios
+
+```{r message=FALSE, warning=FALSE}
+library('arules')
+library('arulesViz')
+library('repmis')
+```
+
+```{r}
+source_data("http://www.rdatamining.com/data/titanic.raw.rdata?attredirects=0&d=1")
+```
+
+> 1. Visualizar los 5 itemsets más frecuentes generados con `eclat()` con soporte mínimo 0.3
+
+```{r}
+# itemsets <- eclat(titanic.raw, parameter = list(support = 0.3), control = list(sort = -1, verbose = TRUE)) 
+itemsets <- eclat(titanic.raw, parameter = list(support = 0.3))
+itemsets_by_frequency <- sort(itemsets, by = "support")
+inspect((itemsets_by_frequency)[1:5])
+plot((itemsets_by_frequency)[1:5], method = "graph")
+```
+
+> 2. Seleccionar las reglas de `R1` con `Age=Adult` en la derecha y `lift > 1`, guardarlas en `R1_age_adult`
+
+```{r}
+R1 <- apriori(titanic.raw,
+                 control = list(verbose=FALSE),
+                 parameter = list(minlen=2, supp=0.005, conf=0.8))
+R1_age_adult <- subset(R1, subset = rhs %in% "Age=Adult" & lift>1)
+inspect(R1_age_adult)
+```
+
+> 3. Seleccionar las reglas de `R1` con `Age=(la que sea)` en la derecha y `lift > 1`, guardarlas en `R1_age` (*partial matching*)
+
+```{r}
+R1_age <- subset(R1, subset = rhs %pin% "Age=" & lift>1)
+inspect(R1_age)
+```
+
+> 4. Seleccionar solo las reglas de `R1` con `Age=Adult` y `Survived=No` en la derecha y `lift > 1`, guardarlas en `R1_age`
+
+```{r}
+R1_age <- subset(R1, subset = rhs %in% c("Age=Adult", "Survived=No") & lift>1)
+inspect(R1_age)
+```
+
+> 5. Ordenar las reglas `R1_no_survived` por *lift* y visualizar las 7 primeras con `arulesviz` usando método interactivo
+
+```{r}
+R1_no_survived  <- subset(R1, items %in% "Survived=No")
+R1_no_survived_by_lift <- sort(R1_no_survived, by = "lift")
+# plot(R1_no_survived_by_lift, engine = "interactive") not working in Rmarkdown
+plotly_arules(R1_no_survived_by_lift)
+```
+
+> 6. Escribir estas reglas en un fichero con el mismo nombre
+
+```{r}
+write(R1_no_survived, file = "R1_no_survived.csv",
+      sep = ",", quote = TRUE, row.names = FALSE)
+```
+
+> 7. Convertir las reglas `R1_no_survived` a un *dataframe*
+
+```{r}
+R1_no_survived_df <- as(R1_no_survived, "data.frame")
+```
+
+> 8. Visualiza con un grafo (método *graph*) las reglas `R1_no_survived` ordenadas por soporte
+
+```{r}
+R1_no_survived_by_support <- sort(R1_no_survived, by = "support")
+plot(R1_no_survived_by_support, method = "graph")
+```
+
+> 9. Visualiza las reglas `R1_no_survived` con confianza mayor que 0.5 (usando `quality` de las reglas), tomando como medidas (soporte y *lift*) y con distinta forma (*shading*) según la confianza de forma interactiva
+
+```{r}
+R1_no_survived_conf0.5 <- R1_no_survived[quality(R1_no_survived)$confidence > 0.5]
+plotly_arules(R1_no_survived_conf0.5, measure = c("support", "lift"), shading = "confidence")
+```
+
+> 10. Eliminar la redundancia y visualizar las reglas resultantes a los siguientes conjuntos de reglas: (1) el conjunto original de reglas y (2) las reglas más significativas
+
+```{r}
+R1_no_redun <- R1[!is.redundant(R1)]
+plot(R1_no_redun)
+R1_signi <- R1[is.significant(R1, titanic.raw)]
+# plot(R1_signi) no hay reglas significativas 
+```
+
+> 11. Convertir el conjunto de reglas más significativas a un `data.frame` y añadir una columna al dataset con el estimador *conviction* que hemos visto en teoría
+
+```{r}
+R1_no_redun_df <- as(R1_no_redun, "data.frame")
+R1_no_redun_df <- cbind(R1_no_redun_df, conviction=interestMeasure(R1_no_redun, "conviction", titanic.raw))
+# ver ?intersetMeasure para otras medidas
+R1_no_redun_df
+```
+
+
+
+

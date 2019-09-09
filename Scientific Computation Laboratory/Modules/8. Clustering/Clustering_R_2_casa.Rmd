@@ -1,0 +1,253 @@
+---
+title: "Clustering en R - 1"
+author: "Salvador Carrillo Fuentes"
+date: "Mayo/2019"
+output: html_document
+---
+
+## Opciones para visualizar tablas desde *RMarkdown*
+
+> Opción 1
+
+```{r warning=FALSE}
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "html") 
+```
+
+> Opción 2
+
+```{r warning=FALSE}
+library(DT)
+```
+
+## *Clustering k-means*
+
+> Algoritmo *k-means*:
+
+* Recibe $2$ parámetros: $k$ (número de *clusters*) y $x_1, ..., x_n$ (conjunto de puntos)
+1. Seleccionamos $k$ *centroides* de manera aleatoria
+2. Repetimos lo siguiente hasta converger:
+  + Para cada punto $x_i$:
+    + Encontrar el *centroide* $c_j$ más cercano al punto $x_i$
+    + Asignamos el punto $x_i$ al *cluster* $j$
+  + Para cada *cluster* $j$:
+    + Recalculamos los nuevos *centroides* como la media de los puntos $x_i$ del *cluster* $j$
+
+> Algoritmo *k-means* en *R* (parámetros más interesantes):
+
+```{r eval=FALSE}
+kmeans(x, centers, iter.max = 10, nstart = 1)
+
+#Ejemplo:
+grpMeat <- kmeans(dataset[,c("Atributo1","Atributo2","Atributo3")], centers=5, nstart=10)
+```
+
+* $x$: matriz numérica de datos (o un objeto que pueda ser transformado a una matriz, como un vector numérico o un *data frame* con columnas numéricas)
+* $centers$: número de *clusters* o un conjunto de *centroides* distintos. Si se proporciona un número, se generan los *centroides* de forma aleatoria.
+* $iter.max$: máximas iteraciones permitidas
+* $nstart$: si $centers$ es un número, se generan $10$ *centroides* y se seleccionan los mejores.
+
+## Explorando el dataset
+
+> Usaremos el dataset *protein.csv* del CV conteniendo datos de 25 países europeos que almacenan la ingesta de proteínas de 9 fuentes de proteínas (atributos) en tantos por ciento.
+
+```{r}
+library(readr)
+food <- read_csv("protein.csv")
+
+food <- as.data.frame(food) # IMPORTANTE!
+
+head(food) %>% kable("html")
+# 25 países y 9 tipos de comida 
+dim(food)
+```
+
+> Extraigo las comidas
+
+```{r}
+my.foods <-food[,2:dim(food)[2]]
+my.foods %>%
+  kable("html") %>%
+  kable_styling(bootstrap_options = c("striped", full_width = F))
+
+# my.foods %>% datatable()
+```
+
+> Analizamos información contenida en el dataset:
+
+```{r}
+# Medias de consumo de cada tipo de alimento
+my.foods %>% 
+  colMeans() %>%
+  round(1) %>%
+  sort() %>%
+  kable("html")
+
+# Desviación estándar 
+my.foods %>% 
+  apply(2, sd) %>%
+  round(1) %>%
+  sort() %>%
+  kable("html")
+```
+
+> Intentaremos hacer *clustering* según la ingesta de carne blanca (*WhiteMeat*) y carne roja (*RedMeat*). El número de *clusters* será $3$. Los *clusters* se forman minimizando la distancia euclídea a los respectivos *centroides* de cada grupo.
+
+```{r}
+set.seed(1)   ## para fijar los clusters aleatorios de inicio
+grpMeat <- kmeans(food[,c("WhiteMeat","RedMeat")], centers=3, nstart=10)
+str(grpMeat)
+grpMeat
+```
+
+> Los grupos han sido calculados. Pasamos a explorar la información obtenida.
+
+```{r}
+## Lista ordenada de los grupos
+Gr1 = order(grpMeat$cluster)
+# Los índices que se usarán a continuación para ver los clusters
+Gr1
+```
+
+```{r}
+# Visualizamos cada país con su cluster de forma ordenada
+data.frame(food$Country[Gr1],grpMeat$cluster[Gr1])
+
+plot(food$RedMeat, food$WhiteMeat, type="n", xlim=c(3,19), xlab="Red Meat", ylab="White Meat")
+```
+
+> Visualizamos los grupos según tipo de carne (*Red*, *White*):
+
+```{r}
+plot(food$RedMeat, food$WhiteMeat, type="n", xlim=c(3,19), xlab="Red Meat", ylab="White Meat")
+
+text(x=food$RedMeat, y=food$WhiteMeat, labels=food$Country, col=grpMeat$cluster+1)
+```
+
+> Aplicamos ahora *clustering* teniendo en cuenta los $9$ atributos buscando $7$ *clusters.*
+
+```{r}
+set.seed(1)
+grpProtein <- kmeans(food[,-1], centers=7, nstart=10)
+Gr1=order(grpProtein$cluster)
+data.frame(food$Country[Gr1],grpProtein$cluster[Gr1])
+
+## plotting cluster assignments on Red and White meat scatter plot
+plot(food$RedMeat, food$WhiteMeat, type="n", xlim=c(3,19), xlab="Red Meat", ylab="White Meat")
+
+text(x=food$RedMeat, y=food$WhiteMeat, labels=food$Country, col=grpProtein$cluster+1)
+```
+
+## Calculando distancias
+
+```{r}
+# ? dist
+# This function computes and returns the distance matrix computed by using the specified distance measure to compute the distances between the rows of a data matrix.
+
+distances.countries = dist(my.foods)
+class(distances.countries)
+
+distances.countries %>%
+  as.matrix() %>%
+  datatable()
+
+# Miramos lista de países:
+
+data.frame(id=seq(1:dim(food)[1]),country=food[,'Country']) %>% kable("html")
+
+# Distancias entre los dos países 
+as.matrix(distances.countries)[5,19]
+ 
+#  Calculándolo manualmente
+sqrt(sum((my.foods[5,]-my.foods[19,])**2))
+```
+
+## *Hierarchical Clustering* 
+
+En *clustering* se utiliza un tipo de diagrama llamado **dendrograma** para visualizar los grupos.
+
+Generamos un *dendrograma* a partir de las distancias entre países calculadas anteriormente.
+
+```{r}
+clusters = hclust(distances.countries, method="ward.D")
+
+plot(clusters, main="Protein Dendrogram", labels=food[,1], cex=0.8, hang=-1)
+rect.hclust(clusters, k=4)
+```
+
+Se pueden ver $4$ *clusters* y las similaridades entre países que van disminuyendo si vamos subiendo desde las hojas del dendrograma.
+
+* Dinamarca y Suecia en el mismo grupo
+* Mayor similaridad de Dinamarca con Suecia que con Noruega aunque estén en el mismo grupo.
+
+Analizamos cómo se van conectando los países según distancias:
+
+```{r}
+clusters$merge
+```
+
+En la tabla anterior vemos números con símbolo $-$ delante y otros sin ese símbolo.
+
+Vemos las conexiones en los niveles inferiores:
+
+* g1: 6 Denmark con 20 Sweden
+* g2: 4 Bulgaria con 25 Yugoslavia
+* g3: 12 Ireland con 21 Switzerland
+* g4: 3 Belgium con 9 France
+* g5: 14 Netherlands con 24 W Germany
+
+En este momento en la tabla aparece:
+
+* -22 4
+
+qué significa que $22$ *UK* está conectado con g4 ($3$ *Belgium* con $9$ *France*)
+
+Y así sucesivamente
+
+> Analizar países por *clusters*
+
+Conectaremos cada país con su *cluster*:
+
+```{r}
+food$cluster = cutree(clusters, k=4)
+head(food) %>% datatable()
+
+# tamaño de cada cluster
+table(food$cluster)
+
+# Diferenciar clusters según las medias
+names(food)[10] <- "Fr.Veg"
+my.means = aggregate(cbind(RedMeat, WhiteMeat, Eggs, Milk, Fish,Cereals,Starch,Nuts,Fr.Veg)~cluster, food, mean)
+
+my.means %>% datatable()
+```
+
+Visualizamos para cada *cluster* las medias de los cuatro primeros alimentos:
+
+```{r}
+par(mfrow=c(2,2))
+eje_x = my.means[,1]
+colors = c("lightblue" ,"red", "green", "pink")
+barplot(my.means$RedMeat, main="Mean RedMeat by Cluster", names.arg=eje_x, xlab="Cluster", ylab="RedMeat", col=colors)
+barplot(my.means$WhiteMeat, main="Mean WhiteMeat", names.arg=eje_x, xlab="Cluster", ylab="WhiteMeat", col=colors)
+barplot(my.means$Eggs, main="Mean Eggs ", names.arg=eje_x, xlab="Cluster", ylab="Eggs", col=colors)
+barplot(my.means$Milk, main="Mean Milk ", names.arg=eje_x, xlab="Cluster", ylab="Milk", col=colors)
+```
+
+Enfrentamos estas variables:
+
+```{r}
+plot(my.foods[,2:5], col=colors)
+```
+
+Alimentos principales en cada *cluster*:
+
+```{r}
+subset(food, food$cluster == 1) %>% kable("html")
+subset(food, food$cluster == 2) %>% kable("html")
+subset(food, food$cluster == 3) %>% kable("html")
+subset(food, food$cluster == 4) %>% kable("html")
+```
+ 
+ 

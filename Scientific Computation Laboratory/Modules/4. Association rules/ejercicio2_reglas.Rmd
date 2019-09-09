@@ -1,0 +1,84 @@
+---
+title: "Ejercicio *dataset* 'Groceries'"
+author: "Salvador Carrillo Fuentes"
+date: "Abril de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Realizar los siguientes apartados con el dataset "Groceries".
+
+```{r warning=FALSE}
+library(arules)
+library(arulesViz)
+data("Groceries")
+```
+
+> 1. Usar algoritmo **apriori** para extraer reglas de asociación tomando como umbrales: soporte - 0.01 , confianza - 0.1
+
+```{r}
+rules <- apriori(Groceries, parameter=list(sup=0.01 , conf=0.1))
+```
+
+> 2. ¿Cuantas reglas se han obtenido?
+
+```{r}
+rules
+```
+
+> 3. Ordenar las reglas por el estimador **lift** y visualizar las 5 primeras reglas
+
+```{r}
+top5.by.lift <- head(sort(rules, by = "lift", decreasing = T), 5)
+inspect(top5.by.lift)
+```
+
+> 4. Seleccionar las reglas con umbral de confianza de 0.5. Usar functión **quality** del paquete **arules**. Inspeccionar las primeras reglas de las obtenidas.
+
+```{r}
+head(quality(rules)) # a data.frame for quality measures (soporte, confianza, lift...)
+rules2 <- rules[quality(rules)$confidence > 0.5]
+inspect(head(rules2))
+```
+
+> 5. Convertir e introducir las reglas en un dataframe. Visualizar el dataframe. Hacer plot del dataframe.
+
+```{r}
+df.rules2 <- as(rules2, "data.frame")
+View(df.rules2)
+plot(df.rules2)
+```
+
+> 6. Visualizar con métodos vistos de arulesViz las reglas obtenidas en el apartado anterior. Visualizar las 30 primeras reglas obtenidas.
+
+```{r warning=FALSE}
+library(colorspace)  
+plot(rules2, col=sequential_hcl(100))
+plot(rules2, col=grey.colors(50, alpha =.8))
+plot(rules2, engine = "htmlwidget")
+plot(rules2, method="matrix")
+plot(rules2, method="matrix", engine = "3d")
+plot(rules2, method="matrix", shading=c("lift", "confidence"))
+plot(rules2, method="matrix", engine="htmlwidget")
+plot(rules2, method="grouped matrix")
+plot(rules2, method="grouped matrix",
+      col = grey.colors(10),
+      gp_labels = gpar(col = "blue", cex=1, fontface="italic"))
+plot(rules2, method="graph")
+plot(rules2, method="graph", 
+     nodeCol = grey.colors(10), edgeCol = grey(.7), alpha = 1)
+plot(rules2, method="graph", engine="graphviz")
+plot(rules2, method="graph", engine="htmlwidget")
+plot(rules2, method="graph", engine="htmlwidget",
+      igraphLayout = "layout_in_circle")
+```
+
+> 7. Para grabar el gráfico generado a partir de las reglas:
+
+```{r}
+saveAsGraph(head(sort(rules2, by="lift"),1000), file="rules.graphml")
+```
+
