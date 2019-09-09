@@ -19,10 +19,10 @@ library("wordcloud2")
 ```
 
 ```{r echo=FALSE, eval=TRUE}
-CONSUMER_KEY <- ''
-CONSUMER_SECRET <- ''
-access_token <- ''
-access_secret <- ''
+CONSUMER_KEY <- 'mVAQbzEiNkQbGFRRD7kgVcfnd'
+CONSUMER_SECRET <- '6Ywso9ImYpI91PpExPYqGCHk8DbKp13ONkG8yDXmHFZeNdoXok'
+access_token <- '967008688774045696-JSTg0M7n2CSV9FwgPgfH28RGnAN54gf'
+access_secret <- '64pLrcRpeQPxIlsQ4N3bh5QlCMFjjTbGwBLSLrmffYiIA'
 ```
 
 ## 1. Extraer de *Twitter* los *tweets* referentes a **#CambioClimático.**
