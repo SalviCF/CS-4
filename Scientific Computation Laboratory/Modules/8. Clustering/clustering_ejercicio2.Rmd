@@ -1,0 +1,201 @@
+---
+title: "Clustering - Ejercicio 2"
+author: "Salvador Carrillo Fuentes"
+date: "Junio de 2019"
+output: html_document
+---
+
+## 1. Importamos los *tweets*
+
+> Cargo las librerías necesarias
+
+```{r warning=FALSE, message=FALSE}
+library(DT)
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(factoextra)
+library(tm)
+library(stringr)
+library(readr)
+```
+
+> Importo el *dataset*
+
+```{r message=FALSE, warning=FALSE}
+hashtag = "#CambioClimatico"
+tweets.df <- read_csv("cambioclimatico.csv", 
+                      locale = locale(encoding = "ISO-8859-1")) %>% 
+  select(-X1) %>%
+  as.data.frame() # IMPORTANTE
+tweets.df <- tweets.df[1:2000, ]
+```
+
+## 2. Utiliza la Matriz de Términos y Documentos que obtienes después del pre-procesamiento como dato de partida para la técnica de *clustering.* Cópiala en una variable **dtm_clus**
+
+> Hacemos el pre-procesamiento
+
+```{r warning=FALSE, message=FALSE}
+tweets.df$text <- str_replace_all(tweets.df$text, "@\\w+"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, "#\\S+"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, "http\\S+\\s*"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, "http[[:alnum:]]*"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, "http[[\\b+RT]]"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, "[[:cntrl:]]"," ")
+tweets.df$text <- str_replace_all(tweets.df$text, hashtag," ")
+tweets.df$text <- gsub('[[:punct:] ]+',' ',tweets.df$text)
+tweets.df$text <- gsub('[[:digit:] ]+',' ',tweets.df$text)
+tweets.df$text <- str_replace_all(tweets.df$text, "[^[:alnum:]]", " ")
+
+twt.corpus <- Corpus(VectorSource(tweets.df$text))
+twt.corpus <- tm_map(twt.corpus, content_transformer(tolower))
+twt.corpus <- tm_map(twt.corpus, removeNumbers)
+twt.corpus <- tm_map(twt.corpus, removePunctuation)
+twt.corpus <- tm_map(twt.corpus, stripWhitespace)
+twt.corpus <- tm_map(twt.corpus, removeWords, stopwords("spanish"))
+
+dtm_clus <- DocumentTermMatrix(twt.corpus) # Punto de partida
+```
+
+> Opción 1: Podemos agrupar los 25 términos más frecuentes por frecuencia
+
+```{r}
+# Data frame con los 20 términos más frecuentes
+freq <- colSums(as.matrix(dtm_clus)) # frequencia de cada término
+
+freq.dt <- as.data.frame(freq)
+freq.dt <- freq.dt %>% 
+  mutate(termino = rownames(freq.dt)) %>%
+  remove_rownames() %>%
+  arrange(desc(freq)) %>% 
+  head(25)
+```
+
+## 3. Construye la matriz de distancias a partir de la información anterior usando: (1) distancia euclídea - la matriz se llamará **mat_dist_euc** (2) distancia manhattan - la matriz se llamará **mat_dist_man**
+
+```{r warning=FALSE}
+mat_dist_euc <- dist(freq.dt) #  euclídea por defecto
+mat_dist_man <- dist(freq.dt, method = "manhattan")
+```
+
+## 4. Construye un dendograma para cada una de las distancias anteriores utilizando el método *ward.D*, y *ward.D2*. Analiza las diferencia al usar cada uno de estos métodos.
+
+```{r}
+clusters1 = hclust(mat_dist_euc, method="ward.D")
+
+plot(clusters1, labels=freq.dt$termino, cex=0.8, hang=-1)
+rect.hclust(clusters1, k=4)
+
+clusters2 = hclust(mat_dist_euc, method="ward.D2")
+
+plot(clusters2, labels=freq.dt$termino, cex=0.8, hang=-1)
+rect.hclust(clusters2, k=4)
+```
+
+> Opción 2: Agrupar los 25 primeros términos (sin previa ordenación por frecuencia)
+
+```{r}
+my.mat <- as.matrix(dtm_clus) %>% t()
+my.mat <- my.mat[1:25, ]
+```
+
+## 3. Construye la matriz de distancias a partir de la información anterior usando: (1) distancia euclídea - la matriz se llamará **mat_dist_euc** (2) distancia *manhattan* - la matriz se llamará **mat_dist_man**
+
+```{r warning=FALSE}
+mat_dist_euc2 <- dist(my.mat) #  euclídea por defecto
+mat_dist_man2 <- dist(my.mat, method = "manhattan")
+```
+
+## 4. Construye un dendograma para cada una de las distancias anteriores utilizando el método *ward.D*, y *ward.D2*. Analiza las diferencia al usar cada uno de estos métodos.
+
+```{r}
+clusters3 = hclust(mat_dist_euc^2, method="ward.D")
+
+plot(clusters3, labels=rownames(my.mat), cex=0.8, hang=-1)
+rect.hclust(clusters3, k=4)
+
+clusters4 = hclust(mat_dist_euc, method="ward.D2")
+
+plot(clusters4, labels=rownames(my.mat), cex=0.8, hang=-1)
+rect.hclust(clusters4, k=4)
+```
+
+La única diferencia entre *ward.D* y *ward.D2* está en el parámetro de entrada.
+
+`hclust(dist(x)^2, method="ward.D")` equivale a `hclust(dist(x), method="ward.D2")`
+
+Los valores de criterio de ward.D2 están "en una escala de distancias" mientras que los valores de criterio de ward.D están "en una escala de distancias al cuadrado".
+
+## 5. Explica, para el dendograma con 6 *clusters* que generes con *mat_dist_man* y *ward.D2*, la información que aparece en el dendograma. Cada grupo en el dendrograma rodéalo con color verde.
+
+```{r}
+plot(clusters2, labels=freq.dt$termino, cex=0.8, hang=-1)
+rect.hclust(clusters2, k=6, border="green")
+
+clusters2$merge
+```
+
+En la tabla anterior vemos números con símbolo "$-$" delante y otros sin ese símbolo.
+
+Vemos las conexiones en los niveles inferiores:  
+* g1: 7 (diversidad) conectado con 8 (maneras)  
+* g2: 9 (mejores) conectado con g1  
+* g3: 10 (minimizar) conectado con g2  
+* g4: 11 (riesgos) conectado con g3 
+* g5: 15 (derretimiento) conectado con 16 (glaciares)  
+* g6: 24 (hundiendo) conectado con 25 (indonesia)  
+* g7: 20 (ciudades) conectado con 21 (señal)
+* g8: 23 (general) conectado con g6
+
+Y así sucesivamente...
+
+## 6. Busca ayuda de **clusplot** y utilízalo explicando los resultados que obtengas
+
+```{r}
+library(cluster)
+clusplot(pam(mat_dist_euc, 5))
+```
+
+El *clusplot* utiliza *PCA* para dibujar los datos. Utiliza los dos primeros componentes principales para explicar los datos.
+
+Los componentes principales son los ejes (ortogonales) que, a lo largo de ellos, los datos tienen la mayor variabilidad. Si los datos son 2d, el uso de dos componentes principales puede explicar toda la variabilidad de los datos, esta es la razón por la que se explica el 100%. Aunque si los datos fueran de una dimensión superior pero tuvieran muchas correlaciones, se puede usar un espacio dimensional inferior para explicar la variabilidad.
+   
+## 7. Busca ayuda de la función *agnes* del paquete *fpc*. Utilízalo en el ejercicio anterior y explica lo que hace el comando y los resultados que obtengas.
+
+El comando calcula el agrupamiento jerárquico aglomerado del conjunto de datos. 
+
+```{r}
+ag <- agnes(freq.dt)
+plot(ag, labels=freq.dt$termino)
+```
+Se obtienen dos gráficos, uno de barras y un dendrograma. Se observa que el coeficiente de aglomeración es bastante elevado, lo que nos indica que las frecuencias de los 25 términos más frecuentes no van dando "saltos" demasiado pronunciados.
+
+## 8. Usa paquete *factoextra* y función `get_dist` para calcular la matriz de distancias usando la correlación de Pearson.
+
+Calcularemos la matriz de distancias para los 25 primeros términos (sin ordenación por frecuencias)
+
+```{r}
+mat_dist <- get_dist(my.mat, method = "pearson")
+fviz_dist(mat_dist)
+```
+
+## 9. A partir de esta nueva matriz de distancias, utiliza *clustering* (*kmeans*) incrementando las iteraciones para ver la evolución de los grupos. Genera un *plot* con los *clusters* para cada número de iteraciones. Hacer *plot* para 1,2,3,4 y 50 iteraciones.
+
+```{r}
+k2 <- kmeans(mat_dist, centers=2, nstart=10, iter.max=2)
+k3 <- kmeans(mat_dist, centers=3, nstart=10, iter.max=3)
+k4 <- kmeans(mat_dist, centers=4, nstart=10, iter.max=4)
+k5 <- kmeans(mat_dist, centers=5, nstart=10, iter.max=50)
+
+p1 <- fviz_cluster(k2, geom = "point", data = mat_dist) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = mat_dist) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = mat_dist) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = mat_dist) + ggtitle("k = 5")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+
+fviz_nbclust(my.mat, kmeans, method = "wss") # optimal k is the "elbow"
+```
+

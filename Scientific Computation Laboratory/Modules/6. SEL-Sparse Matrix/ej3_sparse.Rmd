@@ -1,0 +1,81 @@
+---
+title: "Ejercicio 3 - Sparse Matrix"
+author: "Salvador Carrillo Fuentes"
+date: "Junio de 2019"
+output: html_document
+---
+
+## Ejercicio
+
+Dado el sistema $Ax=b$:
+
+$A=\begin{pmatrix}
+1 & -1 & 1 & 2 & 0 & 0 & 0 & 0 \\
+2 & 1 & 3 & 1 & 0 & 0 & 0 & 0 \\
+0 & 2 & 1 & -1 & 0 & 0 & 0 & 0 \\
+0 & -1 & -1 & 5 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 2 & 1 & 3 & 0 \\
+0 & 0 & 0 & 0 & 1 & -1 & 2 & 0 \\
+0 & 0 & 0 & 0 & 1 & -1 & 15 & 4 \\
+0 & 0 & 0 & 0 & -1 & 1 & 1 & 4 \\
+\end{pmatrix}$, $b=\begin{pmatrix} 
+1 \\
+3 \\
+-2 \\
+2 \\
+5 \\
+6 \\
+3 \\
+0 \\
+\end{pmatrix}$
+
+* Resolver por el método `Solve.block` de *R*.
+* Calcular el error cometido.
+
+> Creamos la matriz $A$ y el vector columna $b$:
+
+```{r}
+library(limSolve)
+A <- matrix(nr=8, nc=8, 0)
+A[1,1:4] = c(1, -1, 1, 2)
+A[2,1:4] = c(2, 1, 3, 1)
+A[3,1:4] = c(0, 2, 1, -1)
+A[4,1:4] = c(0, -1, -1, 5)
+A[5,5:8] = c(2, 1, 3, 0)
+A[6,5:8] = c(1, -1, 2, 0)
+A[7,5:8] = c(1, -1, 15, 4)
+A[8,5:8] = c(-1, 1, 1, 4)
+A
+
+B <- c(1, 3, -2, 2, 5, 6, 3, 0)
+```
+
+> Dividimos la matriz $A$ en blooques de la siguiente manera:
+
+```{r}
+Top = matrix(nr=2, nc=4, data=A[1:2,1:4])
+Top
+
+Blk1 = matrix(nr=2, nc=3, data=A[3:4,2:4])
+Blk1
+
+Bot = matrix(nr=4, nc=4, data=A[5:8,5:8])
+Bot
+
+AR = array(dim=c(2,3,1),data=Blk1)
+Solve.block(Top,AR,Bot,B,overlap=6)
+```
+
+> Y calculamos el resultado
+
+```{r}
+Solve.block()
+```
+
+
+
+
+
+
+
+

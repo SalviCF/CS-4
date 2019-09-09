@@ -1,0 +1,159 @@
+---
+title: "Soporte-Confianza"
+author: "Salvador Carrillo Fuentes"
+date: "3/2019"
+output: html_document
+css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Trabajando con el paquete arules
+
+## Objetivo y ejemplo de ejecución
+
+- Dado un dataset (el que sea) del que se hayan generado reglas de asociación (podrá estar como `data.frame` o de tipo `transactions`), 
+- Dada una regla  $X \rightarrow Y$ ($X,Y$ pueden ser conjuntos de atributos - *itemsets*) generada con `apriori()` pero a la que le hemos borrado el soporte y la confianza
+
+Escribir una función `computer_suppport_confidence` que  dado un *dataset* y una regla de asociación obtenida a partir del *dataset* con el comando `apriori()`,  obtenga:
+
+- **soporte$(X \cup Y)$** (soporte de la unión de $X$ e $Y$)
+- **confianza$(X \rightarrow Y)$**
+
+
+Nota: `subset` lo hemos usado para filtrar reglas (aquí no queremos hacer eso)
+
+La función tendrá el siguiente formato:
+
+```
+computer_suppport_confidence <- function(Dataset, Rule1){
+  ....
+  
+  return(list( my.soporte=....., my.confidence=.....   ))
+}
+```
+
+Un ejemplo de uso, por ejemplo con el *dataset* 'Groceries':
+
+```{r warning=FALSE}
+library(arules)
+data("Groceries")
+class(Groceries)
+rules <- apriori(Groceries, parameter = list(supp=0.001))
+inspect(rules[5])
+regla5 <-rules[5]
+
+# Llamada: 
+#   computer_suppport_confidence(Groceries,rules[5])
+#
+# Resultado:
+#   $my.soporte
+#   [1] 0.001118454
+# 
+#   $my.confidence
+#   [1] 0.9166667
+```
+
+## Aproximaciones:
+
+* Pasar el *dataset* en formato transacciones a lista (por tanto tendríamos una lista de transacciones) y usar funciones de manejo de *itemsets* por ejemplo: 
+  - `is.subset()`
+  - `lhs()` 
+  - `rhs()`
+  - `size()`
+  - `subset()` pero para hacer *subsetting* de *itemsets*, no de reglas (mirar la ayuda si os decidís por usarlo)
+  - mirar en ayuda del paquete `arules` otras (sets)
+
+* Pasar el *dataset* a formato *matrix* (para manejar mejor lo que hay en el *dataset*) y usar funciones como las anteriores. Importantes funciones de conversión a otros tipos o selección :
+  - `as(dataset,"transactions")`
+  - `as(dataset,"matrix")`
+  - `as(lhs(R1),"list")`
+  - `subset(xxx,select=yyy)`
+  
+* Solución que menos me gusta: manipular como cadenas.
+  - `library(stringr)`
+  - `labels(lhs(rule)`
+  - `str_remove_all`
+  - `str_split`
+  - ...
+
+# Funciones manejo de *itemsets*
+
+Os paso algunas funciones interesante para manejar los atributos de las reglas - parte de nuestro paquete de implicaciones. 
+
+**Siempre interesa modularizar, pensar en funciones que luego puedas usar. Divide y vencerás **
+
+
+```{r}
+is.singleton <- function(X){
+  return(length(X)==1)
+}#End is.singleton
+
+union.sets <- function(X,Y){
+  if (!is.empty.S4(Y) &
+      !is.empty.S4(X)) 
+    return(itemUnion(X,Y))
+  else if (!is.empty.S4(Y))
+    return(Y)
+  else   
+    return(X)
+}#End union.sets
+
+intersection.sets <- function(X,Y){
+  if (!is.empty.S4(Y) &
+      !is.empty.S4(X))     
+    return(itemIntersect(X,Y))
+  else if (is.empty.S4(Y))
+    return(Y)
+  else   
+    return(X)
+}#End intersection.sets
+
+difference.sets <- function(X,Y){
+  if (!is.empty.S4(Y) &
+    !is.empty.S4(X)) 
+    return(itemSetdiff(X,Y))
+  else   
+    return(X)
+}#End difference.sets
+
+is.included <- function(X,Y){
+  return(is.subset(X, Y, proper=FALSE, sparse=FALSE))
+}#End is.included
+
+is.included.proper <- function(X,Y){
+  return(is.subset(X, Y, proper=TRUE, sparse=FALSE))
+}#End is.included
+
+is.empty <- function(X){
+  return(size(X)==0)
+}#End is.empty
+
+is.empty.set <- function(X){
+  return(length(X[[1]])==0)  
+}#End is.empty.set
+
+is.empty.S4 <- function(X){
+  identical(size(X),integer(0))
+}
+
+equals.sets <- function(X,Y){
+  return(setequal(X,Y))  
+}#End equals.sets
+
+```
+
+Estas funciones trabajan con *itemsets*, por ejemplo:
+```{r}
+data("Groceries")
+class(Groceries)
+rules<-apriori(Groceries,parameter=list(supp=0.001))
+der <- rhs(rules[1])# primera regla, la parte derecha
+inspect(der)
+is.empty(der)
+```
+
+
+

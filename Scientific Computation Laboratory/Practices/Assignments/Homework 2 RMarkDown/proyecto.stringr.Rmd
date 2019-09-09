@@ -1,0 +1,236 @@
+---
+title: "Introducción al paquete *stringr*"
+author: 
+- Salvador Carrillo Fuentes
+- Grado en Ingeniería Informática, Universidad de Málaga
+date: "Abril de 2019"
+output:
+  ioslides_presentation: default
+  beamer_presentation: default
+logo: logo.png
+css: style.css
+---
+
+```{r setup, include=FALSE}
+library(stringr)
+```
+
+## Contenidos
+
+Podemos dividir las funciones del paquete **stringr** en 4 grupos:
+
+* **Manipulación de caracteres**: trabajar con caracteres de forma individual
+
+* **Manejo de los espacios en blanco**: añadir, borrar...
+
+* **Operaciones dependientes de la configuración**
+
+* **Funciones de *pattern matching***: reconocimiento de expresiones regulares, entre otras
+
+## Obtener y cambiar caracteres (I)
+
+* Usamos `str_length()` para obtener la longitud del *string*:
+
+```{r}
+str_length("cat")
+str_length(NA)
+```
+
+* Usamos `str_sub()` para acceder a caracteres individuales:
+
+```{r}
+str_sub("black cat with hat", 7, 9)
+```
+
+
+## Obtener y cambiar caracteres (II)
+
+* También podemos modificar *strings* con `str_sub()`:
+
+```{r}
+s <- "catnap"
+str_sub(s, 1, 4) <- "bitm" 
+s
+```
+
+* Duplicar con `str_dup()`:
+
+```{r}
+numbers <- c("uno", "dos", "tres")
+str_dup(numbers, 1:3)
+```
+
+## Espacios en blanco (I)
+
+* Añadimos espacios con `str_pad()`:
+
+```{r}
+str_pad(c("a", "abc", "abcdef"), c(2,4,7))
+```
+
+* Para truncar *strings* usamos `str_trunc()`: 
+
+```{r}
+summer <- c("sun", "beach", "sea", "sand")
+str_trunc(summer, 4, "right")
+```
+
+## Espacios en blanco (II)
+
+* Para quitar espacios usamos `str_trim()`:
+
+```{r}
+str_trim(c(" a ", "   b", "c   "))
+```
+
+* Podemos alinear el texto mediante `str_wrap()`:
+
+```{r}
+traba <- c("Erre con erre, guitarra; erre con erre, carril;
+            rápido ruedan los carros, rápido el ferrocarril.")
+cat(str_wrap(traba, width = 50))
+```
+
+## Dependientes de la configuración (I)
+
+* Mayúsculas y minúsculas con `str_to_upper()` y `str_to_lower()`:
+
+```{r}
+r <- "eRRe que eRRe"
+str_to_upper(r)
+str_to_lower(r)
+str_to_title(r)
+```
+
+## Dependientes de la configuración (II)
+
+* Ordenación:
+
+```{r}
+l <- c("d", "n", "a")
+str_order(l)
+str_sort(l)
+```
+
+\* *La configuración por defecto de estas funciones es inglés*
+
+## *Pattern matching* (I)
+
+* Usaremos `cadenas` y la expresión regular `regex.mail` para detectar correos electrónicos: 
+
+```{r}
+cadenas <- c("book", "scarrillo@uma.es",
+             "123-45", "alanturing@gmail.com vonneumann@gmail.com")
+
+regex.mail <- "[[:alnum:]]+\\@[[:alpha:]]+\\.[[:alpha:]]+"
+```
+
+* Para detectar la presencia de un patrón usamos `str_detect()`:
+
+```{r}
+str_detect(cadenas, regex.mail)
+```
+
+## *Pattern matching* (II)
+
+* Para obtener los elementos que cumplen con el patrón usamos `str_subset()`:
+
+```{r}
+str_subset(cadenas, regex.mail)
+```
+
+* Contamos el número de *matches* en cada *string* con `str_count()`:
+
+```{r}
+str_count(cadenas, regex.mail)
+```
+
+## *Pattern matching* (III)
+
+* `str_locate()` devuelve una matriz con las posiciones de los patrones encontrados:
+
+```{r}
+str_locate(cadenas, regex.mail)
+```
+
+* Primer *match* de cada *string* con `str_extract()`:
+
+```{r}
+str_extract(cadenas, regex.mail)
+```
+
+## *Pattern matching* (IV)
+
+* `str_locate_all()` devuelve inicio y fin de todos los *matches*:
+
+```{r}
+str_locate_all(cadenas, regex.mail)
+```
+
+## *Pattern matching* (V)
+
+* Usamos `str_extract_all()` para obtener todos los *matches*:
+
+```{r}
+str_extract_all(cadenas, regex.mail)
+```
+
+## *Pattern matching* (VI)
+
+* Podemos reemplazar el primer *match* de cada *string* con `str_replace()`:
+
+```{r}
+str_replace(cadenas, regex.mail, "*email-hackeado*")
+```
+
+* `str_replace_all()` actúa igual pero afecta a todos los *matches*
+
+## *Pattern matching* (VII)
+
+* Dividimos el *string* según un patrón mediante `str_split()`:
+
+```{r}
+str_split("scarrillo@uma.es", "@")
+```
+
+* También podemos dividir en un número de trozos prefijado con `str_split_fixed()`:
+
+```{r}
+str_split_fixed("scarrillo@uma.alu.es", "\\.", n = 2)
+```
+
+## *Pattern matching* (VIII)
+
+* Con `fixed()` comparamos la secuencia exacta de *bytes* del *string*:
+
+```{r}
+a1 <- "\u00e1"
+a2 <- "a\u0301"
+c(a1, a2)
+a1 == a2
+
+str_detect(a1, fixed(a2)) # no hay match
+```
+
+## *Pattern matching* (IX)
+
+* Para comparar *strings* respecto a otras reglas usamos `coll()`:
+
+```{r}
+str_detect(a1, coll(a2))
+str_subset(c("a", "A", "ae"), coll("a", ignore_case=T, locale="fr"))
+```
+
+* `boundary()` para límites entre caracteres, líneas, palabras...
+
+```{r}
+str_split("Abril de 2019", boundary("word"))
+```
+
+## Para saber más...
+
+[https://cran.r-project.org/web/packages/stringr/stringr.pdf](https://cran.r-project.org/web/packages/stringr/stringr.pdf)
+
+[https://github.com/tidyverse/stringr](https://github.com/tidyverse/stringr)
+
+[https://stringr.tidyverse.org/](https://stringr.tidyverse.org/)

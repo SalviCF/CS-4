@@ -1,0 +1,20 @@
+---
+title: "Clustering 1"
+author: "Salvador Carrillo Fuentes"
+date: "Junio de 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+data("USArrests")
+usa.arrests <- na.omit(USArrests)
+dist.euc <- get_dist(usa.arrests) # por defecto calcula distancia euclídea
+fviz_dist(dist.euc) # matriz de distancias
+```
+
