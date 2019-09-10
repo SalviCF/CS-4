@@ -30,14 +30,13 @@ lines(x,y, col="red")
 
 # Instalar paquete de ejemplos de
 # R Graphics Cookbook
-#
 install.packages("gcookbook")
 library(gcookbook)
 library(ggplot2)
 View(BOD)
 
 # 1. Creamos un objeto de tipo gráfico
-#    Le indicamos los datos y ejes con aes
+# Le indicamos los datos y ejes con aes
 g1 <- ggplot(BOD, aes(x=Time, y=demand))
 
 # 2. El objeto geométrico será un gráfico de puntos
@@ -49,15 +48,14 @@ g1 + geom_point(aes(color = demand))
 
 # Instalar paquete de ejemplos de
 # R Graphics Cookbook
-#
 landdata_states <- read_csv("landdata-states.csv")
 View(landdata_states)
 head(landdata_states[1:5])
-# Es dataset con muchas filas. Cogemos un subconjunto
+# Es un dataset con muchas filas. Cogemos un subconjunto
 hp2001Q1 <- subset(landdata_states, Date == 2001.25)
 
 # 1. Creamos un objeto de tipo gráfico
-#    Le indicamos los datos y ejes con aes
+# Le indicamos los datos y ejes con aes
 p1 <- ggplot(hp2001Q1, aes(x = log(Land.Value),
                            y = Structure.Cost))
 
