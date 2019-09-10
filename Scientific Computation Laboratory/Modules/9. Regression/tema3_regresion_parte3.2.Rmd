@@ -88,4 +88,3 @@ plot(lm.fit5)
 anova(lm.fit ,lm.fit5)
 ```
 
-

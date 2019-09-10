@@ -173,29 +173,3 @@ brc %>%
 
 top_n(select(filter(brc, age=="40-49"), tumor_size), 5)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

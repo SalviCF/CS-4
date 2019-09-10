@@ -71,11 +71,3 @@ Solve.block(Top,AR,Bot,B,overlap=6)
 ```{r}
 Solve.block()
 ```
-
-
-
-
-
-
-
-

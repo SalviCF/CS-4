@@ -75,10 +75,3 @@ ggplot(medias2, aes(N_BABIES, WT_MEAN, color=SEX)) +
   facet_grid(SEX ~ .) +
   theme(legend.position = "none")
 ```
-
-
-
-
-
-
-

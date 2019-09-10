@@ -100,5 +100,3 @@ donde $n$ es el número de documentos, $d_j$ el número de documentos conteniendo 
 En caso de que el número de documentos, *tweets*, etc. sea enorme, el uso de la estructura de datos *data.frame* puede provocar problemas por las limitaciones de memoria *RAM*.
 
 En ese caso, usar paquetes *data.table* o *SOAR*.
-
-

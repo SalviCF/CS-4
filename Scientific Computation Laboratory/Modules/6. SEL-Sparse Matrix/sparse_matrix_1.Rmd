@@ -5,7 +5,6 @@ date: "Junio de 2019"
 output: html_document
 ---
 
-
 ```{r}
 library(pracma)
 n <-5000 # Size of matrix
@@ -142,7 +141,3 @@ AR = array(dim=c(4,8,2),data=c(Blk1,Blk2))
 # overlap is the sum of the number of rows of Top and Bot.
 Solve.block(Top,AR,Bot,B,overlap=4)
 ```
-
-
-
-

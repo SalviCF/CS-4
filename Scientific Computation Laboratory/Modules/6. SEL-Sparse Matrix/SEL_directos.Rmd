@@ -109,17 +109,3 @@ residuo
 norm(residuo,'2')
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
