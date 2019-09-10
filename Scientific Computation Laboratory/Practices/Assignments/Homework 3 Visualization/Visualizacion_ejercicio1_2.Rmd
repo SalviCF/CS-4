@@ -99,5 +99,4 @@ plot4 <- ggplot(msleep, aes(x=bodywt, y=sleep_total )) +
 
 plot4
 ````
-
  

@@ -61,20 +61,3 @@ kable(starwars %>%
         filter(species=="Human" & films == "A New Hope") %>%
         arrange(mass))
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

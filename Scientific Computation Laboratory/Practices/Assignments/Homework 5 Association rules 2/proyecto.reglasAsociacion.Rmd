@@ -402,6 +402,3 @@ rules <- Apriori(x, Weka_control(N = 5))
 ```{r}
 rules
 ```
-
-
-

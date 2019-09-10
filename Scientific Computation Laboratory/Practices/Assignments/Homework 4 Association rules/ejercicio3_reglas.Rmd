@@ -220,8 +220,3 @@ Según el manual:
 ```{r}
 inspect(rules2.by.conf[!is.redundant(rules2.by.conf)]) # reglas no redundantes
 ```
-
-
-
-
-

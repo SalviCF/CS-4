@@ -194,13 +194,3 @@ brc %>%
     summarise(mean_deg_malig=mean(deg_malig),
               sd_deg_malig=sd(deg_malig))
 ```
-
-
-
-
-
-
-
-
-
-
