@@ -12,7 +12,6 @@ class(lastfm$user)
 #para poder analizarlo con paquete {\tt arules}
 
 lastfm$user <- factor(lastfm$user)
-# Ejecuta en tu ordenador
 # levels(lastfm$user)  ## 15,000 users
 # levels(lastfm$artist)  ## 1,004 artists
 
@@ -36,8 +35,6 @@ lista.musica.por.usuario1 <- as(lista.musica.por.usuario,"transactions")
 
 lista.musica.por.usuario[1:5]
 
-# en la versión actual de R esto va bien
-#error ¿? (en versiones anteriores de R daba error, si os pasa intentar siguientes comandos)
 #lista.musica.por.usuario2 <- as(lapply(lista.musica.por.usuario, "[[", 1), "transactions")
 #lista.musica.por.usuario2
 

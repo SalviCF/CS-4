@@ -26,7 +26,7 @@ mi.area <- area.rect(3,6)
 
 miString <- "Salvi"
 n1 <- 45
-# no es exactamente lo mismo la clase que le tipo class() y typeof()
+# no es exactamente lo mismo la clase que el tipo class() y typeof()
 # si quiero que mi número sea entero tengo que ponerle 'L' detrás
 
 log1 <- TRUE
@@ -120,13 +120,7 @@ rm(list = ls())
 v <- 1:10
 names(v) <- paste("n", v)
 
-# For alternativa para construir matrices
+# Alternativa para construir matrices
 v <- 1:12
 dim(v) <- c(3,4)
 v[1,3]
-
-
-
-
-
-

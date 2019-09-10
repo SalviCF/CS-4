@@ -1,9 +1,8 @@
-
 #page 2
 #geom bar
 housing <- read_csv("landdata-states.csv")
 
-# Funci ´on que permite la agregaci ´on de una variable respecto de otra # - aplicando una funci ´on determinada.
+# Funci ´on que permite la agregaci ´on de una variable respecto de otra # - aplicando una función determinada.
 housing.sum <- aggregate(housing["Home.Value"], housing["State"], FUN=mean)
 rbind(head(housing.sum), tail(housing.sum))
 ggplot(housing.sum, aes(x=State, y=Home.Value)) + geom_bar()

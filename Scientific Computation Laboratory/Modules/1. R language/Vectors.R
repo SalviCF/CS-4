@@ -164,6 +164,3 @@ vector("list", 5)
 # Lenght of each string 
 ss <- c("Salvi", "loves", "computer", "science")
 nchar(ss)
-
-
-

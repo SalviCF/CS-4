@@ -171,8 +171,3 @@ d.sort <- lapply(d, sort) # sorts the data frame by columns
 
 ## Coercing to be a data frame
 as.data.frame(d.sort) # this makes no sense because the correspondence has been lost... 
-
-
-
-
-

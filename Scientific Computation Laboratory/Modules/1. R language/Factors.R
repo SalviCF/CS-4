@@ -37,10 +37,3 @@ tapply(ages,affils,mean)
 
 # split(): yields a list
 split(ages, affils) # forming the groups by levels
-
-
-
-
-
-
-

@@ -54,6 +54,3 @@ Note the use of the `height` parameter to determine how much vertical space the 
 You can also use the `shinyApp` function to define an application inline rather then in an external directory.
 
 In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
-
-
-

@@ -84,10 +84,9 @@ length(subsetR1)
 R1_no_redundantes <- R1[-subsetR1] # remove subset rules. 
 
 R1_no_redundantes
-# Segundo método para eliminar redundancia. ¿Comparar?
 R1_no_redundantes_1 <- R1[-is.redundant((R1))]
 R1_no_redundantes_1
-# Segundo método es el correcto
+#  método es el correcto
 
 
 ## ------------------------------------------------------------------------
@@ -122,4 +121,3 @@ saveAsGraph(sort(R1_no_redundantes_1, by = "lift"), file = "R1_no_redundantes_1.
 ##   marker = list(opacity = .7, size = 10, symbol = 2),
 ##   colors = c("blue", "green")) #depreciated, si va en Mac
 ## 
-

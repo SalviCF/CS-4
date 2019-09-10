@@ -57,10 +57,3 @@ v[is.na(v)] <- 0 # replacing NA by 0
 # Append (see ?append)
 v <- 1:10
 append(v, c(1.2,3.3), after = 2) # inserts 1.2 and 3.3 after the 2nd position
-
-
-
-
-
-
-

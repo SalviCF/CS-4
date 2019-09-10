@@ -55,7 +55,3 @@ plot3 <- ggplot(msleep, aes(x=log(bodywt), y=(sleep_rem)/sleep_total)) +
 
 plot3
 ```
- 
- 
-
- 

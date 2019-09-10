@@ -20,7 +20,6 @@ plot(rules, col=grey.colors(50, alpha =.8))
 
 
 ## ----eval=FALSE----------------------------------------------------------
-## #Ejecutar en vuestro ordenador
 ## sel <- plot(rules, engine = "interactive")
 ## plot(rules, engine = "htmlwidget")
 
@@ -34,13 +33,11 @@ plot(subrules, method="matrix", shading=c("lift", "confidence"))
 
 
 ## ---- eval=FALSE---------------------------------------------------------
-## # Ejecutar en vuestro ordenador
 ## plot(subrules, method="matrix", engine="interactive")
 ## plot(subrules, method="matrix", engine="htmlwidget")
 
 
 ## ---- eval=FALSE---------------------------------------------------------
-## # Ejecutar en vuestro ordenador
 ## plot(subrules, method="grouped matrix")
 ## plot(subrules, method="grouped matrix",
 ##      col = grey.colors(10),
@@ -60,7 +57,6 @@ plot(subrules2, method="graph", engine="graphviz")
 
 
 ## ----eval=FALSE----------------------------------------------------------
-## # Ejecutar en local
 ## plot(subrules2, method="graph", engine="htmlwidget")
 ## plot(subrules2, method="graph", engine="htmlwidget",
 ##      igraphLayout = "layout_in_circle")
@@ -92,5 +88,3 @@ View(out1)
 
 ## ---- echo=TRUE,eval=TRUE,display=TRUE-----------------------------------
 saveAsGraph(head(sort(Rules2, by="lift"),1000), file="rules.graphml")
-
-

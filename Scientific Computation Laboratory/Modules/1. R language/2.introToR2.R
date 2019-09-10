@@ -6,8 +6,6 @@ myFunction <- function(a,b){
   return(list(suma=a1, resta=a2)) # si no pongo return se devuelve el último resultado
 }
 
-# Ejercicios diapositiva 9 pdf Introducción a R 2
-
 # Programar una función que devuelva dado un vector cuantos números
 # impares tiene. AYUDA: Usar % % para calcular el resto
 
@@ -55,9 +53,6 @@ sapply(airquality, mean)
 
 sapply(airquality, function(x) mean(x, na.rm = TRUE))
 sapply(airquality, mean, na.rm = T) # without anonymous function
-# Deberes
 # ignore NA del data frame 
 s <- split(airquality, airquality$Month)
 lapply(s, function(x) mean(x, na.rm = TRUE))
-
-

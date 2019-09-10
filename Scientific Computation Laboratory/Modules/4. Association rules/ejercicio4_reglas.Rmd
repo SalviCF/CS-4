@@ -109,7 +109,3 @@ R1_no_redun_df <- cbind(R1_no_redun_df, conviction=interestMeasure(R1_no_redun, 
 # ver ?intersetMeasure para otras medidas
 R1_no_redun_df
 ```
-
-
-
-

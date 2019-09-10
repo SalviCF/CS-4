@@ -131,7 +131,6 @@ class(d[[1]][1]) # single number list
 class(d[[1]][[1]]) # single number
 
 # See ?c
-# Es raro que recursive = T de una lista no recursiva...
 c(list(a=1,b=2,c=list(d=5,e=9)))
 c(list(a=1,b=2,c=list(d=5,e=9)), recursive = T) # to flatten a list
 str(c(list(a=1,b=2,c=list(d=5,e=9))))
@@ -167,8 +166,3 @@ as.numeric(l) # if all elements of l are scalars
 
 l <- list(one=1, two=2, three=3, four=c(2,2), five=5, six=c(2,3))
 unlist(l)
-
-
-
-
-

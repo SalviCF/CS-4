@@ -85,11 +85,3 @@ repeat {
   k <- k + 1
   if (k == 10) break
 }#endrepeat
-
-
-
-
-
-
-
-

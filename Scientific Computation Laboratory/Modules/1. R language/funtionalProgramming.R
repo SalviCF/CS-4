@@ -49,6 +49,3 @@ by.month <- split(airquality,airquality$Month) # split by month
 sapply(by.month, function(x) mean(x[,"Wind"])) # mean of Wind by months
 
 split(d$income,list(d$gender,d$over25)) # 
-
-
-

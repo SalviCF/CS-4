@@ -1,7 +1,6 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = FALSE)
 
-
 ## ----echo=TRUE-----------------------------------------------------------
 library(arules)
 data("Adult")
@@ -93,4 +92,3 @@ length(Adult)
 dim(Adult)
 Adult
 inspect(Adult[1:2])
-

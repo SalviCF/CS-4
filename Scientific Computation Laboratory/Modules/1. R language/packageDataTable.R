@@ -87,5 +87,3 @@ iris[Species %in% c("virginica", "versicolor")]
 setnames(iris,gsub("^Sepal\\.", "",names(iris)))
 iris[,grep("^Petal",names(iris)):=NULL]
 
-
-

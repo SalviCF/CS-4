@@ -136,8 +136,3 @@ colnames(z) <- c("a", "b")
 rownames(z) <- c("x", "y")
 
 z <- matrix(1:4, 2,2, dimnames = list(c("r1", "r2"), c("c1", "c2")))
-
-
-
-
-
