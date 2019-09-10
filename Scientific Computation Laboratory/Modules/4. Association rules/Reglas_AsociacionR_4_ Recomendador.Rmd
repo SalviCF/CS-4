@@ -19,7 +19,7 @@ El *dataset* **lastfm.csv** del CV incluye las transacciones recogidas en una ra
 ```{r warning=FALSE}
 library(arules)
 library(readr)
-lastfm <- read_csv("~/Grado Ingeniería Informática/G.I.I_2018/Segundo_cuatri/LabComp/Prácticas/Datasets/lastfm.csv")
+lastfm <- read_csv("lastfm.csv")
 lastfm[1:20,]
 length(lastfm$user)   ## 289,955 filas
 class(lastfm$user)
