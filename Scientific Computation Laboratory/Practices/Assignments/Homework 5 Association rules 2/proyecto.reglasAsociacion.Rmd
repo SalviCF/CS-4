@@ -1,10 +1,13 @@
 ---
-title: "Reglas de AsociaciÛn - Dataset *online.csv*"
-author: 
+title: "Reglas de Asociaci√≥n - Dataset *online.csv*"
+author:
 - Salvador Carrillo Fuentes
-- Grado en IngenierÌa Inform·tica, Universidad de M·laga
+- Grado en Ingenier√≠a Inform√°tica, Universidad de M√°laga
 date: "Mayo de 2019"
-output: ioslides_presentation
+output:
+  ioslides_presentation: default
+  slidy_presentation: default
+  beamer_presentation: default
 widescreen: yes
 logo: r_logo.png
 css: style.css
@@ -15,45 +18,45 @@ css: style.css
 * Descargar a local el *dataset* ***online.csv***
 * Analizar la estructura y tipo del *dataset*
 * Analizar significado, estructura y tipo de cada columna
-* Comandos para ver las primeras filas y las ˙ltimas
+* Comandos para ver las primeras filas y las √∫ltimas
 * Cambiar los nombres de las columnas: ***Fecha***, ***IDcomprador***, ***ProductoComprado***
-* Hacer un resumen (`summary`) del *dataset* y analizar detalladamente toda la informaciÛn que devuelve el comando
-* Implementar una funciÛn que, usando funciones vectoriales de *R* (`apply`, `tapply`, `sapply` ...) devuelva si hay valores `NA` en las columnas del *dataset*. Si asÌ lo fuera, devolver sus Ìndices y adem·s sustituirlos por el valor $0$ 
+* Hacer un resumen (`summary`) del *dataset* y analizar detalladamente toda la informaci√≥n que devuelve el comando
+* Implementar una funci√≥n que, usando funciones vectoriales de *R* (`apply`, `tapply`, `sapply` ...) devuelva si hay valores `NA` en las columnas del *dataset*. Si as√≠ fuera, devolver sus √≠ndices y adem√°s sustituirlos por el valor $0$ 
 
 ## Contenido (II)
 
-* Calcular n˙mero de filas del *dataset*
-* Calcula en cu·ntas fechas distintas se han realizado ventas
-* Calcula cu·ntos compradores distintos hay en el *dataset*
-* Calcula cu·ntos productos distintos se han vendido
-* Visualiza con distintos gr·ficos el *dataset*:
-      + Los valores distintos de cada columna con varios tipos de gr·ficos
+* Calcular n√∫mero de filas del *dataset*
+* Calcula en cu√°ntas fechas distintas se han realizado ventas
+* Calcula cu√°ntos compradores distintos hay en el *dataset*
+* Calcula cu√°ntos productos distintos se han vendido
+* Visualiza con distintos gr√°ficos el *dataset*:
+      + Los valores distintos de cada columna con varios tipos de gr√°ficos
       + Enfrenta unas variables contra otras para buscar patrones y comenta los patrones que puedas detectar 
       
 ## Contenido (III)
 
 * Usa `split` para construir a partir del *dataset* una lista con nombre ***lista.compra.usuarios*** en la que cada elemento de la lista es cada comprador junto con todos los productos que ha comprado
 * Hacer `summary` de ***lista.compra.usuarios***
-* Contar cu·ntos usuarios hay en la ***lista.compra.usuarios***
+* Contar cu√°ntos usuarios hay en la ***lista.compra.usuarios***
 * Detectar y eliminar duplicados en la ***lista.compra.usuarios***
-* Contar cu·ntos usuarios hay en la lista despuÈs de eliminar duplicados
+* Contar cu√°ntos usuarios hay en la lista despu√©s de eliminar duplicados
 * Convertir a tipo de datos transacciones. Guardar en ***Tlista.compra.usuarios***
 * Hacer `inspect` de los dos primeros valores de ***Tlista.compra.usuarios***
 
 ## Contenido (IV)
 
-* Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones m·s frecuentes
-* Generar las reglas de asociaciÛn con $80$% de confianza y $15$% de soporte
+* Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones m√°s frecuentes
+* Generar las reglas de asociaci√≥n con $80$% de confianza y $15$% de soporte
 * Ver las reglas generadas y ordenalas por ***lift***. Guarda el resultado en una variable nueva
-* Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que habÌa. Dibuja las reglas ordenadas y no redundantes usando paquete ***arulesViz***. Si son muchas visualiza las $20$ primeras.
-* Aplicar la nociÛn de afinidad introducida en clase
-* Investigar alg˙n otro paquete *R* relacionado con reglas de asociaciÛn. Explicar su uso con un *dataset* y ejemplos
+* Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que hab?a. Dibuja las reglas ordenadas y no redundantes usando paquete ***arulesViz***. Si son muchas visualiza las $20$ primeras.
+* Aplicar la noci√≥n de afinidad introducida en clase
+* Investigar alg√∫n otro paquete *R* relacionado con reglas de asociaci√≥n. Explicar su uso con un *dataset* y ejemplos
 
 ## Descargar a local el *datasetonline.csv*
 
-Cargamos la librerÌa ***readr*** para usar `read_cs()` e indicamos que no tome la primera fila del *csv* como las columnas de *data frame* mediante `col_names = F`.
+Cargamos la librer√≠a ***readr*** para usar `read_cs()` e indicamos que no tome la primera fila del *csv* como las columnas de *data frame* mediante `col_names = F`.
 
-TambiÈn cargamos las librerÌas ***ggplot2*** para crear gr·ficas, ***dplyr*** para manipular los datos y ***arules*** para la reglas de asociaciÛn.
+Tambi√©n cargamos las librer√≠as ***ggplot2*** para crear gr√°ficas, ***dplyr*** para manipular los datos y ***arules*** para la reglas de asociaci√≥n.
 
 ```{r warning=FALSE, results='hide', message=FALSE}
 library(readr)
@@ -63,7 +66,7 @@ library(dplyr)
 library(arules)
 ```
 
-Podemos visualizar el *dataset* como si fuera una hoja de c·lculo con el comando `View(online)`
+Podemos visualizar el *dataset* como si fuera una hoja de c√°lculo con el comando `View(online)`
 
 ## Analizar la estructura y tipo del *dataset*
 
@@ -118,22 +121,22 @@ typeof(online$X3)
 
 Tenemos un vector con 22343 valores de tipo ***character*** que ***R*** representa internamente mediante el tipo ***character***
 
-## Comandos para ver las primeras filas y las ˙ltimas
+## Comandos para ver las primeras filas y las √∫ltimas
 
 ```{r}
 head(online, 3) #  muestra las tres primeras filas
-tail(online, 3) # muestra las tres ˙ltimas filas
+tail(online, 3) # muestra las tres ?ltimas filas
 ```
 
 ## Cambiar los nombres de las columnas: Fecha, IDcomprador, ProductoComprado
 
-Al no proporcionar nombres a las columnas al importar el *csv*, ***R*** les asignÛ un nombre por defecto (**X1**, **X2**, **X3**)
+Al no proporcionar nombres a las columnas al importar el *csv*, ***R*** les asigna un nombre por defecto (**X1**, **X2**, **X3**)
 
 ```{r}
 names(online)
 ```
 
-Podemos indicar otros nombres mediante asignanciÛn:
+Podemos indicar otros nombres mediante asignanci√≥n:
 
 ```{r}
 online <- as.data.frame(online)
@@ -141,15 +144,15 @@ names(online) <- c("Fecha", "IDcomprador", "ProductoComprado")
 head(online, 2)
 ```
 
-## Hacer un resumen del *dataset* y analizar detalladamente toda la informaciÛn que devuelve el comando
+## Hacer un resumen del *dataset* y analizar detalladamente toda la informaci√≥n que devuelve el comando
 
-`summary()` devuelve un resumen tras aplicar algunas funciones estadÌsticas b·sicas:
+`summary()` devuelve un resumen tras aplicar algunas funciones estad√≠sticas b√°sicas:
 
 ```{r}
 summary(online)
 ```
 
-## Hacer un resumen del *dataset* y analizar detalladamente toda la informaciÛn que devuelve el comando (II)
+## Hacer un resumen del *dataset* y analizar detalladamente toda la informaci√≥n que devuelve el comando (II)
 
 ```{r}
 summary(online$Fecha)
@@ -161,7 +164,7 @@ Observamos que para la columna `online$Fecha`:
 * La media es *2000-12-21*
 * Las fechas que dejan por debajo (o son iguales) al $25\%$, $50\%$ y $75\%$ de todas las fechas son, respectivamente, *2000-05-29*, *2001-01-30* y *2001-06-21*
 
-## Hacer un resumen del *dataset* y analizar detalladamente toda la informaciÛn que devuelve el comando (III)
+## Hacer un resumen del *dataset* y analizar detalladamente toda la informaci√≥n que devuelve el comando (III)
 
 ```{r}
 summary(online$IDcomprador)
@@ -173,7 +176,7 @@ Observamos que para la columna `online$IDcomprador`:
 * La media es $576.4$
 * Las *ids* que dejan por debajo (o son iguales) al $25\%$, $50\%$ y $75\%$ de todos las *ids* son, respectivamente, $292$, $582$ y $863$
 
-## Hacer un resumen del *dataset* y analizar detalladamente toda la informaciÛn que devuelve el comando (IV)
+## Hacer un resumen del *dataset* y analizar detalladamente toda la informaci√≥n que devuelve el comando (IV)
 
 ```{r}
 summary(online$ProductoComprado)
@@ -184,11 +187,11 @@ Observamos que para la columna `online$ProductoComprado`:
 * Hay un total de $22343$ productos
 * La clase y modo de almacenamiento de los elementos de la columna es ***character***
 
-## Implementar una funciÛn que, usando funciones vectoriales de *R*, devuelva si hay valores `NA` en las columnas del *dataset*. Si asÌ lo fuera, devolver sus Ìndices y adem·s sustituirlos por el valor $0$ 
+## Implementar una funci?n que, usando funciones vectoriales de *R*, devuelva si hay valores `NA` en las columnas del *dataset*. Si as√≠ fuera, devolver sus √≠ndices y adem√°s sustituirlos por el valor $0$ 
 
-* La funciÛn `is.na()` devuelve una matriz *booleana* donde un elemento ser· `TRUE` si habÌa un `NA` o `FALSE` en otro caso. 
+* La funci√≥n `is.na()` devuelve una matriz *booleana* donde un elemento es `TRUE` si hay un `NA` o `FALSE` en otro caso. 
 
-* Uso dicha matriz para obtener las posiciones de los `NA`s y, si habÌa `NA`s, los sustituyo por $0$.
+* Uso dicha matriz para obtener las posiciones de los `NA`s y, si hab√≠a `NA`s, los sustituyo por $0$.
 
 ```{r}
 na.in.dataframe <- function(dataframe){
@@ -201,7 +204,7 @@ na.in.dataframe <- function(dataframe){
 }
 ```
 
-## N˙mero de filas, fechas distintas, compradores distintos y productos distintos en el *dataset*
+## N√∫mero de filas, fechas distintas, compradores distintos y productos distintos en el *dataset*
 
 ```{r}
 nrow(online)
@@ -210,16 +213,16 @@ length(unique(online$IDcomprador))
 length(unique(online$ProductoComprado))
 ```
 
-## Visualiza con distintos gr·ficos el *dataset*: valores distintos de cada columna (I)
+## Visualiza con distintos gr?ficos el *dataset*: valores distintos de cada columna (I)
 
 ```{r}
 plot1 <- ggplot(online, aes(Fecha, seq_along(Fecha))) + 
-  geom_point(aes(color = Fecha)) + ylab("Õndice"); plot1
+  geom_point(aes(color = Fecha)) + ylab("?ndice"); plot1
 ```
 
 Observamos que se produjeron dos paradas en la ventas, que se reiniciaron en *2001-01* y *2002-01*  
 
-## Visualiza con distintos gr·ficos el *dataset*: valores distintos de cada columna (II)
+## Visualiza con distintos gr√°ficos el *dataset*: valores distintos de cada columna (II)
 
 ```{r}
 plot2 <- ggplot(online, aes(ProductoComprado)) + 
@@ -228,11 +231,11 @@ plot2 <- ggplot(online, aes(ProductoComprado)) +
   coord_flip(); plot2
 ```
 
-## Visualiza con distintos gr·ficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (I)
+## Visualiza con distintos gr√°ficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (I)
 
-Puede ser interesante conocer las ventas seg˙n el mes o el aÒo. Para ello, debemos manipular el *dataset* original.
+Puede ser interesante conocer las ventas seg√∫n el mes o el a√±o. Para ello, debemos manipular el *dataset* original.
 
-AÒadimos nuevas columnas, ***Mes*** y ***Year***:
+A√±adimos nuevas columnas, ***Mes*** y ***Year***:
 
 ```{r}
 online2 <- online %>%
@@ -240,7 +243,7 @@ online2 <- online %>%
   mutate(Year = as.numeric(format(Fecha,'%Y')))
 ```
 
-Ahora podemos agrupar por aÒo y visualizar:
+Ahora podemos agrupar por a?o y visualizar:
 
 ```{r}
 plot3 <- ggplot(online2, aes(Year, fill = as.factor(Year))) + 
@@ -251,16 +254,16 @@ plot3 <- ggplot(online2, aes(Year, fill = as.factor(Year))) +
 plot3
 ```
 
-## Visualiza con distintos gr·ficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (II)
+## Visualiza con distintos gr√°ficos el *dataset*: enfrenta unas variables contra otras para buscar patrones (II)
 
-TambiÈn serÌa ˙til visualizar el n˙mero de compras en cada mes por aÒo.
+Tambi√©n ser√≠a √∫til visualizar el n?mero de compras en cada mes por a√±o.
 
 ```{r}
 plot4 <- ggplot(online2, aes(Mes)) + 
   geom_bar() + 
   facet_wrap(~ Year) + 
   theme(axis.text.x = element_text(angle = 45)) +
-  labs(title = "Compras por mes en cada aÒo", x = NULL, y = "Compras")
+  labs(title = "Compras por mes en cada a?o", x = NULL, y = "Compras")
 
 plot4
 ```
@@ -283,7 +286,7 @@ head(summary(lista.compra.usuarios))
 length(lista.compra.usuarios)
 ```
 
-## Eliminar duplicados, contar cu·ntos usuarios hay en la lista despuÈs de eliminar duplicados en la ***lista.compra.usuarios*** y convertir a tipo de datos transacciones
+## Eliminar duplicados, contar cu√°ntos usuarios hay en la lista despu√©s de eliminar duplicados en la ***lista.compra.usuarios*** y convertir a tipo de datos transacciones
 
 * Podemos usar `unique()` para quitar los duplicados, aunque no hay:
 
@@ -303,17 +306,17 @@ Tlista.compra.usuarios <- as(lista.compra.usuarios, "transactions")
 inspect(Tlista.compra.usuarios[1:2])
 ```
 
-## Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones m·s frecuentes
+## Buscar ayuda de `itemFrequencyPlot` para visualizar las $20$ transacciones m√°s frecuentes
 
-La clave est· en el par·metro ***topN***:
+La clave est√° en el par√°metro ***topN***:
 
 ```{r}
 itemFrequencyPlot(Tlista.compra.usuarios, topN = 20)
 ```
 
-## Generar las reglas de asociaciÛn con $80$% de confianza y $15$% de soporte
+## Generar las reglas de asociaci?n con $80$% de confianza y $15$% de soporte
 
-Usamos la funciÛn `apriori()` para generar las reglas:
+Usamos la funci√≥n `apriori()` para generar las reglas:
 
 ```{r}
 reglas <- apriori(Tlista.compra.usuarios, 
@@ -330,7 +333,7 @@ reglas.por.lift <- sort(reglas, by = "lift")
 inspect(reglas.por.lift)
 ```
 
-## Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que habÌa
+## Elimina todas las reglas redundantes. Calcula el % de reglas redundantes que hab√≠a
 
 * Eliminamos las reglas redundantes:
 
@@ -338,7 +341,7 @@ inspect(reglas.por.lift)
 reglas.no.redun.lift <- reglas.por.lift[!is.redundant(reglas.por.lift)]
 ```
 
-* Aunque no hay reglas redundantes, el % de reglas redundantes podrÌa calcularse asÌ:
+* Aunque no hay reglas redundantes, el % de reglas redundantes puede calcularse:
 
 $porcentaje = \frac{reglas.redundantes}{total.reglas} * 100$ 
 
@@ -361,35 +364,35 @@ plot(reglas.no.redun.lift, method = "graph")
 plot(reglas.no.redun.lift)
 ```
 
-## Aplicar la nociÛn de *afinidad* introducida en clase
+## Aplicar la noci√≥n de *afinidad* introducida en clase
 
-Usamos la funciÛn `affinity()` para calcular una matriz de afinidad entre los *items*. SÛlo se muestra una submatriz de $9\times5$
+Usamos la funci√≥n `affinity()` para calcular una matriz de afinidad entre los *items*. S√≥lo se muestra una submatriz de $9\times5$
 
 ```{r}
 affinity(Tlista.compra.usuarios)[1:9, 1:5]
 ```
 
-## Investigar alg˙n otro paquete *R* relacionado con reglas de asociaciÛn. Explicar su uso con un *dataset* y ejemplos (I)
+## Investigar alg√∫n otro paquete *R* relacionado con reglas de asociaci√≥n. Explicar su uso con un *dataset* y ejemplos (I)
 
 El paquete ***RWeka*** es una interfaz de *R* para *Weka*.
 
-*Weka* es una colecciÛn de algoritmos de *machine learning* para tareas *data mining*.
+*Weka* es una colecci√≥n de algoritmos de *machine learning* para tareas *data mining*.
 
-Est· escrito en *Java* y tiene herramientas para preprocesar datos, clasficaciÛn, regresiÛn, *clustering*, **reglas de asociaciÛn** y visualizaciÛn.
+Est√° escrito en *Java* y tiene herramientas para preprocesar datos, clasficaci√≥n, regresi√≥n, *clustering*, **reglas de asociaci√≥n** y visualizaci√≥n.
 
-Se puede encontrar m·s informaciÛn en:  
+Se puede encontrar m√°s informaci√≥n en:  
 [https://cran.r-project.org/web/packages/RWeka/RWeka.pdf](https://cran.r-project.org/web/packages/RWeka/RWeka.pdf)  
 [https://rdrr.io/cran/RWeka/man/Weka_associators.html](https://rdrr.io/cran/RWeka/man/Weka_associators.html)
 
-## Investigar alg˙n otro paquete *R* relacionado con reglas de asociaciÛn. Explicar su uso con un *dataset* y ejemplos (II)
+## Investigar alg√∫n otro paquete *R* relacionado con reglas de asociaci√≥n. Explicar su uso con un *dataset* y ejemplos (II)
 
-* Cargamos el *dataset* mediante la funcion `read.arff()`:
+* Cargamos el *dataset* mediante la funci√≥n `read.arff()`:
 
 ```{r warning=FALSE}
 library(RWeka)
 ```
 
-* Aplicamos el algoritmo `Apriori()`, que reduce iterativamente el soporte mÌnimo hasta que encuentra el n˙mero de reglas requerido con la mÌnima confianza dada. Especificamos que queremos $5$ reglas.
+* Aplicamos el algoritmo `Apriori()`, que reduce iterativamente el soporte m√≠nimo hasta que encuentra el n√∫mero de reglas requerido con la m√≠nima confianza dada. Especificamos que queremos $5$ reglas.
 
 ```{r}
 x <- read.arff(system.file("arff", "contact-lenses.arff",
@@ -397,7 +400,7 @@ x <- read.arff(system.file("arff", "contact-lenses.arff",
 rules <- Apriori(x, Weka_control(N = 5))
 ```
 
-## Investigar alg˙n otro paquete *R* relacionado con reglas de asociaciÛn. Explicar su uso con un *dataset* y ejemplos (III)
+## Investigar alg√∫n otro paquete *R* relacionado con reglas de asociaci√≥n. Explicar su uso con un *dataset* y ejemplos (III)
 
 ```{r}
 rules
