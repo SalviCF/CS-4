@@ -1,0 +1,143 @@
+% !TEX TS-program = lualatex
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{libertine}
+\usepackage{fontawesome}
+\usepackage{longtable}
+\usepackage[cm]{fullpage}
+
+% headers and footers
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyfoot[L]{Salvador Carrillo Fuentes}
+\fancyfoot[C]{Page \thepage\ of \pageref*{LastPage}}
+% \fancyfoot[R]{\today}
+\renewcommand{\footrulewidth}{0.4pt}% default is 0pt
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+
+% StackOverflow-like tags
+% https://tex.stackexchange.com/a/311949/142692
+% https://tex.stackexchange.com/questions/387499/how-to-create-a-border-that-looks-like-a-tag
+\usepackage{tikz}
+\definecolor{tagbg}{RGB}{225,236,244}
+\definecolor{tagtxt}{RGB}{88,115,159}
+\newcommand{\sotag}[1]{\tikz[baseline]{\node[anchor=base, rounded corners=0.5ex, text height=1.5ex, text depth=.25ex, fill=tagbg, draw=tagbg, text=tagtxt] {#1};}}
+
+% Helpers for adding job entries
+\newcommand{\job}[2]{\large\sffamily \textbf{#1} at \textbf{#2}}
+\newcommand{\course}[2]{\large\sffamily \textbf{#1} | {#2}}
+\newcommand{\skill}[1]{\large\sffamily \textbf{#1}}
+\newcommand{\sep}{\multicolumn{2}{c}{}\\}
+
+% tweak the url colors
+\usepackage{hyperref}
+\definecolor{linkcolor}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolor, linkcolor=linkcolor}
+
+% nicer-looking section titles
+\usepackage{titlesec}
+\titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{1em}{3pt}
+
+\begin{document}
+
+% --------------------TITLE-------------
+\par{\centering
+		{\Huge \textsc{Salvador Carrillo Fuentes}
+	}\bigskip\par}
+
+\hrule
+\vspace{0.5em}
+\begin{tabular}{rl}
+  \textsc{Phone:}     & +34 617 70 08 29\\
+  \textsc{Email:}     & \href{mailto:scarrillo@uma.es}{scarrillo@uma.es} | \href{mailto:salva.carrillo.fuentes@gmail.com}{salva.carrillo.fuentes@gmail.com}\\
+  \textsc{Socials:}   & \faLinkedin{} \href{https://www.linkedin.com/in/salvador-carrillo-fuentes-6415021ab/}{LinkedIn: salvacf}
+                      | \faGithub{} \href{https://github.com/SalviCF}{GitHub: SalviCF}
+\end{tabular}
+
+\section{Summary}
+\begin{tabular}{p{0.9\textwidth}}
+
+Student finishing a bachelor in Computer Science at University of Málaga. In my journey to become a data scientist!\\\\
+
+I'm a functional programming enthusiast since my first encounter with Haskell and I'm currently improving my knowledge about Scala and Machine Learning.
+\\\\
+
+  Interests: \sotag{functional programming} \sotag{haskell} \sotag{scala} \sotag{julia} \sotag{data science} \sotag{machine learning} \sotag{big data}
+\end{tabular}
+
+\section{Work Experience}
+\begin{longtable}{r|p{0.72\textwidth}}
+  \textsc{Mar 2019--Jun 2019} & \job{Software Engineer Intern}{RavenPack} (Málaga, Spain) \\(3 months)
+    &\sotag{allegro common lisp} \sotag{html} \sotag{css} \sotag{javascript} \sotag{json}  \sotag{git} \sotag{ubuntu}  \sotag{emacs}\\&\\
+    &Extraction of information from unstructured text and transformation into machine readable form.\\&\\
+    &Development of internal tools.\\\sep
+    
+    \textsc{Jan 2015--Apr 2015} & \job{HR Specialist Intern}{Grupo Eulen} (Málaga, Spain) \\(3 months)
+    &\sotag{recruitment} \sotag{screening} \sotag{interview} \sotag{orientation} \sotag{job placement} \sotag{management}\\\sep
+    
+    \textsc{Oct 2012--Jun 2013} & \job{Sports Instructor}{C.D. Balonmano Juventud de Málaga} (Málaga, Spain) \\(8 months)
+    &\sotag{entertainment} \sotag{game} \sotag{recreation} \sotag{teaching} \sotag{physical education}\\
+\end{longtable}
+
+\section{Education}
+\begin{longtable}{r|p{0.72\textwidth}}
+    \hspace*{8.5mm}\textsc{2015--Present} & \job{Bachelor of Computer Science (Major in Computing)}{University of Málaga}\\
+    &\sotag{mathematics} \sotag{object oriented programming} \sotag{data structures}
+    \sotag{automata theory} \sotag{concurrency} \sotag{formal languages} \sotag{complexity theory}
+    \sotag{functional programming} \sotag{compilers} \sotag{machine learning} \sotag{computational models}  \sotag{programming languages} \sotag{algorithms} \sotag{theory of computation}\\&\\
+    &Emphasis in key computational model principles, algorithms and programming languages.\\&\\
+    &Solid background in science and application of Artificial Intelligence techniques to automated systems.\\\sep
+    
+    \textsc{2011--2015} & \job{Bachelor of Psychology}{University of Málaga}\\
+    &\sotag{statistics} \sotag{psychobiology} \sotag{group dynamics} \sotag{motivation} \sotag{emotion} \sotag{cognition} 
+    \sotag{work} \sotag{organizations} \sotag{thinking} \sotag{reasoning} \sotag{decision making}
+\end{longtable}
+
+\section{Programming Exposure}
+\begin{longtable}{r|p{0.72\textwidth}}
+    \hspace*{31.5mm}  & \skill{Languages} \\
+    More familiar & \sotag{java} \sotag{matlab} \\ \\
+    \hspace*{8mm} &  \sotag{R} \sotag{sql} \sotag{haskell} \sotag{scala} \\ \\
+    Less familiar
+    & \sotag{python} \sotag{c} \sotag{c++} \sotag{pl/sql} \sotag{common lisp} \sotag{assembly} \\\sep
+    
+    & \skill{Misc} \\
+     & \sotag{linux} \sotag{git} \sotag{jflex} \sotag{cup} \sotag{latex} \sotag{bash} \sotag{markdown} \sotag{jupyter notebook}
+\end{longtable}
+
+\section{Courses}
+\begin{longtable}{r|p{0.72\textwidth}}
+    \hspace*{18.5mm}\textsc{Jul 2020} & \course{Machine Learning (Stanford University)}{Coursera} ({\href{https://www.coursera.org/account/accomplishments/certificate/WMTXT62UDQ23}{certificate}})\\(56 h)
+    &\sotag{principal component analysis}
+    \sotag{logistic regression}
+    \sotag{neural networks}
+    \sotag{clustering}
+    \sotag{mapReduce}
+    \sotag{anomaly detection}
+    \sotag{support vector machines}
+    \sotag{linear regression}\\\sep
+    
+    \textsc{Sep 2019} & \course{Ultimate Python}{Udemy}\\\sep
+    
+    \textsc{Jan 2019} & \course{Rock the JVM! Scala and Functional Programming}{Udemy}\\\sep
+    
+    \textsc{Jul 2018} & \course{Information Technologies today}{International University of Andalucía}\\(20 h)
+    &\sotag{cybersecurity}
+    \sotag{data mining}
+    \sotag{big data}
+    \sotag{quantum computing}\\\sep
+\end{longtable}
+
+\section{Accomplishments}
+\begin{tabular}{rl}
+  \textsc{Some Projects:}&
+  \href{https://github.com/SalviCF/Machine-Learning-Course}{Machine Learning algorithms}, \href{https://github.com/SalviCF/WikiCrawler}{WikiCrawler}, \href{https://github.com/SalviCF/PLXC-2014}{Mini-Compiler}, \href{https://github.com/SalviCF/CS-4/tree/master/Robotics}{Robotics}, \href{https://github.com/SalviCF/Flood-Fill}{Flood-Fill}, \href{https://github.com/SalviCF/CS-4/tree/master/Scientific\%20Computation\%20Laboratory/Practices/Assignments/dplyr\%20exercise}{DPLYR}\\& \href{https://github.com/SalviCF/CS-2/tree/master/Computer\%20Organization/Raspberry_Pi_3/practices/final_practice_vader_theme}{Vader}, \href{https://github.com/SalviCF/CS-2/tree/master/Operating\%20Systems/SHELL}{Mini-Shell}, \href{https://github.com/SalviCF/CS-3/tree/master/Algorithms\%20and\%20Complexity\%20Theory}{Complexity Theory}, \href{https://github.com/SalviCF/CS-3/tree/master/Design\%20and\%20Analysis\%20of\%20Algorithms/practices/knapsack}{Knapsack}, \href{https://github.com/SalviCF/CS-3/tree/master/Design\%20and\%20Analysis\%20of\%20Algorithms/practices/n-queens}{N-Queens}, \href{https://github.com/SalviCF/CS-3/tree/master/Robot\%20Programming/scorbot_simulation}{Scorbot}\\
+  \textsc{Languages:}& \textbf{Spanish} (native), \textbf{English} (intermediate, currently improving), \textbf{French} (basic).\\
+\end{tabular}
+
+\end{document}
